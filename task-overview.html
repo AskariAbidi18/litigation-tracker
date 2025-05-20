@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Overview – Aeka Litigation Tracker</title>
+  <style>
+    /* Common Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* Theme Variables: Red, Shades of Red, and White */
+    :root {
+      /* Base Palette for Red Theme */
+      --logo-primary-red: #8C1C1C;
+      --logo-primary-red-darker: #6E1616;
+      --logo-primary-red-darkest: #4B1212;
+      
+      --logo-red-tint-light: #F5E8E8;    
+      --logo-red-tint-medium: #D9C3C3;   
+      --logo-red-tint-sidebar-link: #EADCDC; 
+      --logo-red-tint-sidebar-link-hover: #E0CFCF; 
+
+      --logo-text-muted-red: #8C5555;
+      
+      --neutral-white: #FFFFFF;
+      --neutral-almost-white: #FCFBFB;
+      --neutral-light-gray: #EAEAEA;
+
+      /* Mapping to UI elements */
+      --page-bg: var(--neutral-almost-white);
+      --sidebar-bg: var(--logo-red-tint-light);          
+      --sidebar-link-bg: var(--logo-red-tint-sidebar-link);
+      --sidebar-link-hover-bg: var(--logo-red-tint-sidebar-link-hover);
+      --sidebar-link-active-bg: var(--logo-red-tint-medium); 
+      --main-content-text-dark: var(--logo-primary-red-darkest);
+      --main-content-text-muted: var(--logo-text-muted-red);
+      --heading-color: var(--logo-primary-red);
+      --subheading-border-color: var(--logo-red-tint-medium);
+      --button-bg: var(--logo-primary-red);
+      --button-hover-bg: var(--logo-primary-red-darker);
+      --button-text-color: var(--neutral-white);
+      --card-bg: var(--neutral-white); 
+      --card-hover-bg-tint: var(--logo-red-tint-light); 
+      
+      /* Structural Variables */
+      --border-radius: 12px; 
+      --shadow-color: rgba(140, 28, 28, 0.08); 
+      --font-family: 'Inter', Arial, sans-serif;
+    }
+
+    /* Global Body Styles */
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      background-color: var(--page-bg);
+      color: var(--main-content-text-dark); 
+    }
+
+    /* Watermark Styling */
+    body::after {
+        content: "";
+        background-image: url('images/aekalogo.webp'); 
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 250px auto; 
+        
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        width: 250px; 
+        height: 250px;
+
+        opacity: 0.03; 
+        z-index: -1000; 
+        pointer-events: none;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background-color: var(--sidebar-bg);
+      padding: 25px; 
+      position: fixed;
+      top: 0;
+      left: 0;
+      box-shadow: 2px 0 8px var(--shadow-color);
+      display: flex;
+      flex-direction: column;
+      font-weight: 600;
+      font-size: 16px;
+      border-top-right-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+      box-sizing: border-box;
+      z-index: 100; 
+    }
+
+    .sidebar-header { 
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .sidebar-logo {
+        width: 60px; 
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .sidebar h2 { /* Menu title in sidebar */
+      margin-top: 0;
+      margin-bottom: 20px; 
+      color: var(--heading-color); 
+      font-weight: 700;
+      font-size: 22px; 
+      letter-spacing: 1px;
+    }
+    
+    .sidebar nav { 
+        flex-grow: 1;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: var(--logo-primary-red-darker); 
+      background-color: var(--sidebar-link-bg);
+      padding: 12px 18px;
+      margin-bottom: 10px; 
+      border-radius: var(--border-radius);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 6px var(--shadow-color);
+      display: block;
+    }
+    .sidebar a:hover {
+      background-color: var(--sidebar-link-hover-bg);
+      transform: translateX(3px);
+    }
+    .sidebar a[aria-current="page"] {
+        background-color: var(--sidebar-link-active-bg);
+        color: var(--logo-primary-red-darkest); 
+        font-weight: 700;
+        box-shadow: 0 4px 8px rgba(140, 28, 28, 0.1);
+    }
+    .user-info {
+        margin-top: auto; 
+        padding: 15px 0;
+        border-top: 1px solid var(--logo-red-tint-medium);
+        font-size: 13px;
+        color: var(--logo-text-muted-red);
+        text-align: center; 
+    }
+    .user-info p {
+        margin: 5px 0;
+    }
+    #logout-button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: var(--button-bg);
+        color: var(--button-text-color);
+        border: none;
+        border-radius: var(--border-radius); 
+        cursor: pointer;
+        font-weight: 600;
+        font-family: var(--font-family);
+        transition: background-color 0.3s ease;
+    }
+    #logout-button:hover {
+        background-color: var(--button-hover-bg);
+    }
+
+
+    /* Main Content Area Styling */
+    .main-content {
+      margin-left: 280px; 
+      padding: 40px 50px;
+      position: relative; 
+      z-index: 1; 
+    }
+
+    h1 { /* Welcome to Task Overview */
+      font-size: 34px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      color: var(--heading-color);
+    }
+
+    h2 { /* Section titles like Quick Actions, Task Summary */
+      font-size: 26px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--heading-color);
+      border-bottom: 2px solid var(--subheading-border-color);
+      padding-bottom: 10px;
+      margin-top: 35px;
+    }
+
+    .quick-actions {
+        margin-bottom: 30px;
+    }
+
+    .quick-actions a { 
+      text-decoration: none;
+    }
+
+    .add-task-btn {
+      background-color: var(--button-bg);
+      border: none;
+      padding: 14px 28px;
+      border-radius: var(--border-radius);
+      color: var(--button-text-color);
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 8px var(--shadow-color);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      letter-spacing: 0.6px;
+    }
+    .add-task-btn:hover {
+      background-color: var(--button-hover-bg);
+      transform: translateY(-2px);
+    }
+
+    /* Card Styling */
+    .card {
+      background-color: var(--card-bg);
+      padding: 22px 28px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 6px 12px var(--shadow-color);
+      margin-bottom: 24px;
+      color: var(--main-content-text-dark);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(140, 28, 28, 0.12); 
+      background-color: var(--card-hover-bg-tint); 
+    }
+
+    .card h3 { /* Card titles */
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--logo-primary-red-darker); 
+    }
+
+    .card p { /* Text within cards */
+      font-size: 15px;
+      color: var(--main-content-text-muted);
+      line-height: 1.5;
+      margin: 4px 0;
+    }
+    .card p strong {
+        color: var(--main-content-text-dark);
+        font-weight: 600;
+    }
+
+    /* Empty State Message Styling */
+    .empty-state-message {
+        background-color: var(--card-bg); 
+        padding: 25px;
+        border-radius: var(--border-radius);
+        text-align: center;
+        color: var(--main-content-text-muted);
+        font-size: 16px;
+        margin-top: 15px;
+        box-shadow: 0 4px 8px var(--shadow-color);
+        border: 1px dashed var(--logo-red-tint-medium); 
+    }
+    
+    /* Utility class to hide elements */
+    .hidden {
+        display: none !important;
+    }
+
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 220px;
+        }
+        .main-content {
+            margin-left: 230px; 
+            padding: 30px 35px;
+        }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static; 
+        border-radius: 0;
+        flex-direction: column; 
+        align-items: center; 
+      }
+      .sidebar nav {
+          width: 100%;
+          max-width: 300px; 
+      }
+      .sidebar .user-info {
+          width: 100%;
+          max-width: 300px;
+          text-align: center;
+          border-top: 1px solid var(--logo-red-tint-medium);
+          padding-top: 15px;
+          margin-bottom: 15px; 
+      }
+      .sidebar h2 {
+          width: 100%; 
+          text-align: center;
+          margin-bottom: 15px;
+          font-size: 22px; 
+      }
+      .sidebar a {
+          margin: 0 auto 10px auto; 
+          font-size: 14px; 
+          padding: 10px 15px;
+          text-align: center;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 25px 20px; 
+      }
+      h1 {
+        font-size: 28px;
+      }
+      h2 { 
+        font-size: 22px;
+      }
+      .add-task-btn {
+          font-size: 16px;
+          padding: 12px 24px;
+      }
+      .card {
+          padding: 18px 22px;
+      }
+      .card h3 {
+          font-size: 18px;
+      }
+      .card p {
+          font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+        <img src="images/WebsiteLogo_1-898735755-1659284008389.webp" alt="Aeka Litigation Tracker Logo" class="sidebar-logo">
+        <h2>Menu</h2>
+    </div>
+    <nav> 
+        <a href="dashboard.html">Dashboard</a>
+        <a href="task-overview.html" aria-current="page">Task Overview</a>
+        <a href="reminders.html">Upcoming Tasks</a>
+        <a href="create-case.html" id="sidebar-add-new-task" class="hidden">Add New Task</a>
+    </nav>
+    <div class="user-info" id="user-info-panel" style="display: none;">
+        <p id="user-email-display"></p>
+        <p id="user-role-display"></p>
+        <button id="logout-button">Logout</button>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <h1 id="welcome-heading">Welcome to Task Overview</h1>
+
+    <section class="quick-actions hidden" aria-label="Quick Actions" id="quick-actions-section">
+      <h2>Quick Actions</h2>
+      <a href="create-case.html" id="link-add-new-task-button">
+        <button class="add-task-btn" type="button">Add New Task</button>
+      </a>
+    </section>
+
+    <section class="task-summary" aria-label="Task Summary">
+      <h2>Top Priority Tasks</h2>
+      <div id="task-summary-cards">
+        </div>
+    </section>
+
+    </main>
+
+  <script type="module">
+    // Firebase configuration 
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHwxHAxWSNOkEqCPWTUQ-8n1YA-8kcrI0",
+      authDomain: "litigation-tracker-55f64.firebaseapp.com",
+      projectId: "litigation-tracker-55f64",
+      storageBucket: "litigation-tracker-55f64.appspot.com",
+      messagingSenderId: "937375454085",
+      appId: "1:937375454085:web:46de7372ef8d3d888deaec",
+      measurementId: "G-P9SWJPNE5F"
+    };
+
+    // Importing Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; 
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app); 
+
+    // DOM elements
+    const taskSummaryContainer = document.getElementById('task-summary-cards');
+    const quickActionsSection = document.getElementById('quick-actions-section'); 
+    const sidebarAddNewTaskLink = document.getElementById('sidebar-add-new-task');
+    const welcomeHeading = document.getElementById('welcome-heading');
+    const userInfoPanel = document.getElementById('user-info-panel');
+    const userEmailDisplay = document.getElementById('user-email-display');
+    const userRoleDisplay = document.getElementById('user-role-display');
+    const logoutButton = document.getElementById('logout-button');
+    let currentUser = null; 
+
+
+    // Function to handle UI updates based on user role
+    function updateUserUI() { 
+        console.log("Task Overview - updateUserUI called with currentUser:", currentUser); 
+        if (currentUser && currentUser.role) {
+            userInfoPanel.style.display = 'block'; 
+            userEmailDisplay.textContent = `User: ${currentUser.displayName || currentUser.email}`;
+            const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            userRoleDisplay.textContent = `Role: ${displayRole}`;
+            welcomeHeading.textContent = `Welcome, ${currentUser.displayName || currentUser.email}!`;
+
+            if (currentUser.role === 'teamLead' || currentUser.role === 'caseLead') {
+                console.log("Task Overview - Role is teamLead or caseLead, showing Add New Task elements."); 
+                if(quickActionsSection) quickActionsSection.classList.remove('hidden');
+                if(sidebarAddNewTaskLink) sidebarAddNewTaskLink.classList.remove('hidden');
+            } else { 
+                console.log("Task Overview - Role is NOT teamLead or caseLead (it's " + currentUser.role + "), hiding Add New Task elements."); 
+                if(quickActionsSection) quickActionsSection.classList.add('hidden');
+                if(sidebarAddNewTaskLink) sidebarAddNewTaskLink.classList.add('hidden');
+            }
+        } else { 
+            console.log("Task Overview - No user or no role in user object, hiding Add New Task elements and user info."); 
+            userInfoPanel.style.display = 'none';
+            welcomeHeading.textContent = 'Welcome to Task Overview';
+            if(quickActionsSection) quickActionsSection.classList.add('hidden');
+            if(sidebarAddNewTaskLink) sidebarAddNewTaskLink.classList.add('hidden');
+        }
+    }
+    
+    // Authentication state listener
+    onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+            console.log("Task Overview: Firebase user detected:", firebaseUser.uid); 
+            const storedUserJSON = localStorage.getItem('currentUser');
+            if (storedUserJSON) {
+                try {
+                    currentUser = JSON.parse(storedUserJSON); 
+                    console.log("Task Overview: currentUser from localStorage:", currentUser); 
+                    if (currentUser.uid === firebaseUser.uid) { 
+                        if (currentUser.role === 'viewer') {
+                            console.log("User is a Viewer. Redirecting to dashboard.html from Task Overview."); 
+                            window.location.href = 'dashboard.html';
+                            return; 
+                        }
+                        updateUserUI(); 
+                        loadTaskOverviewData(); 
+                    } else {
+                        localStorage.removeItem('currentUser');
+                        currentUser = null;
+                        console.warn("Task Overview: Auth state UID and localStorage UID mismatch. Redirecting to login."); 
+                        window.location.href = 'index.html'; 
+                    }
+                } catch (e) {
+                    console.error("Task Overview: Error parsing currentUser from localStorage. Redirecting to login.", e); 
+                    localStorage.removeItem('currentUser');
+                    currentUser = null;
+                    window.location.href = 'index.html'; 
+                }
+            } else {
+                console.warn("Task Overview: User authenticated but no profile in localStorage. Redirecting to login."); 
+                window.location.href = 'index.html'; 
+            }
+        } else {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateUserUI(); 
+            console.log("Task Overview: User is signed out. Redirecting to login."); 
+            window.location.href = 'index.html'; 
+        }
+    });
+
+    // Logout functionality
+    if(logoutButton) { 
+        logoutButton.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                console.log('User signed out successfully'); 
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Sign out error', error); 
+                alert('Error signing out: ' + error.message);
+            });
+        });
+    }
+
+
+    // Helper function to format dates
+    function formatDate(dateValue) {
+      if (!dateValue) return 'N/A';
+      try {
+        const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
+        if (isNaN(date.getTime())) return 'N/A';
+        return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch (e) {
+        return 'N/A';
+      }
+    }
+
+    // Helper function to create a task card
+    function createTaskCard(title, detailsArray) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.setAttribute('tabindex', '0');
+        
+        let content = `<h3>${title}</h3>`;
+        detailsArray.forEach(detail => {
+            if(detail.value || (typeof detail.value === 'number' && detail.value === 0)) { 
+                 content += `<p><strong>${detail.label}:</strong> ${detail.value}</p>`;
+            }
+        });
+        card.innerHTML = content;
+        return card;
+    }
+
+    // Helper function to display an empty state message
+    function displayEmptyState(container, message) {
+        if(container) container.innerHTML = `<div class="empty-state-message">${message}</div>`;
+    }
+
+    // Main function to load and display task overview data
+    async function loadTaskOverviewData() { 
+      if (!currentUser || !currentUser.role) {
+          console.warn("Task Overview: loadTaskOverviewData called without a valid currentUser.");
+          displayEmptyState(taskSummaryContainer, "User data not available.");
+          return;
+      }
+      console.log("Task Overview: loadTaskOverviewData called for user:", currentUser); 
+      displayEmptyState(taskSummaryContainer, "Loading priority tasks...");
+
+      try {
+        let casesQuery;
+        // ** CORRECTED Firestore query based on role **
+        if (currentUser.role === 'caseLead' && currentUser.uid) {
+            console.log(`Task Overview: Fetching cases for Case Lead: ${currentUser.uid} using 'assignedUsersUids'`);
+            // Assumes 'assignedUsersUids' is an array in your Firestore documents
+            casesQuery = query(collection(db, "cases"), where("assignedUsersUids", "array-contains", currentUser.uid));
+        } else if (currentUser.role === 'teamLead') { 
+            console.log("Task Overview: Fetching all cases for Team Lead.");
+            casesQuery = collection(db, "cases");
+        } else {
+            // This path should ideally not be reached due to the redirect for 'viewer' role.
+            console.warn("Task Overview: Unexpected role for data loading:", currentUser.role);
+            displayEmptyState(taskSummaryContainer, "Your role does not have permission to view these tasks.");
+            return;
+        }
+        
+        const querySnapshot = await getDocs(casesQuery);
+        const relevantCases = [];
+        querySnapshot.forEach(doc => {
+          relevantCases.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("Task Overview: Fetched relevant cases:", relevantCases.length); 
+
+        // Populate Top 2 Priority Tasks from relevantCases
+        const priorityTasks = relevantCases
+          .filter(task => task.status && task.status.toLowerCase() !== 'closed' && task.dueDateOfReply)
+          .sort((a, b) => {
+            const dateA = a.dueDateOfReply.toDate ? a.dueDateOfReply.toDate() : new Date(a.dueDateOfReply);
+            const dateB = b.dueDateOfReply.toDate ? b.dueDateOfReply.toDate() : new Date(b.dueDateOfReply);
+            return dateA - dateB;
+          })
+          .slice(0, 2);
+
+        if(taskSummaryContainer) taskSummaryContainer.innerHTML = '';
+        if (priorityTasks.length > 0) {
+          priorityTasks.forEach(task => {
+            const card = createTaskCard(
+              task.client || 'N/A Client',
+              [
+                { label: 'Case ID', value: task.caseId || task.id },
+                { label: 'Primary Issue', value: task.issue || 'N/A' },
+                { label: 'Status', value: task.status || 'N/A' },
+                { label: 'Due Date of Reply', value: formatDate(task.dueDateOfReply) }
+              ]
+            );
+            if(taskSummaryContainer) taskSummaryContainer.appendChild(card);
+          });
+        } else {
+          displayEmptyState(taskSummaryContainer, "No priority tasks found " + (currentUser.role === 'caseLead' ? "assigned to you." : "with upcoming due dates."));
+        }
+
+      } catch (error) {
+        console.error("Error loading task overview data:", error);
+        displayEmptyState(taskSummaryContainer, "Could not load priority tasks. Check console for details.");
+      }
+    }
+  </script>
+</body>
+</html>

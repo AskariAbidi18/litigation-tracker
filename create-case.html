@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Case – Aeka Litigation Tracker</title>
+  <style>
+    /* Common Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* Theme Variables: Red, Shades of Red, and White */
+    :root {
+      /* Base Palette for Red Theme */
+      --logo-primary-red: #8C1C1C;
+      --logo-primary-red-darker: #6E1616;
+      --logo-primary-red-darkest: #4B1212;
+      
+      --logo-red-tint-light: #F5E8E8;
+      --logo-red-tint-medium: #D9C3C3;
+      --logo-text-muted-red: #8C5555;
+      
+      --neutral-white: #FFFFFF;
+      --neutral-almost-white: #FCFBFB;
+
+      /* UI Specific Variables */
+      --page-bg: var(--neutral-almost-white);
+      --form-container-bg: var(--neutral-white);
+      --main-text-color: var(--logo-primary-red-darkest);
+      --heading-color: var(--logo-primary-red);
+      --label-color: var(--logo-primary-red-darker); 
+      --muted-text-color: var(--logo-text-muted-red);
+      
+      --input-bg: var(--neutral-white); 
+      --input-text-color: var(--logo-primary-red-darkest);
+      --input-border: var(--logo-red-tint-medium);
+      --input-focus-border: var(--logo-primary-red);
+      --input-focus-bg: var(--logo-red-tint-light); 
+      --input-focus-shadow-color: rgba(140, 28, 28, 0.25);
+
+      --button-bg: var(--logo-primary-red);
+      --button-hover-bg: var(--logo-primary-red-darker);
+      --button-text-color: var(--neutral-white);
+      
+      /* Structural Variables */
+      --border-radius-lg: 12px; 
+      --border-radius-md: 8px;  
+      --border-radius-sm: 6px;  
+      --shadow-color: rgba(140, 28, 28, 0.15); 
+      --font-family: 'Inter', Arial, sans-serif; 
+    }
+
+    /* Global Body Styles */
+    body {
+      background-color: var(--page-bg);
+      font-family: var(--font-family);
+      color: var(--main-text-color);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Watermark Styling */
+    body::after {
+        content: "";
+        background-image: url('images/aekalogo.webp'); 
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 250px auto; 
+        
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        width: 250px; 
+        height: 250px;
+
+        opacity: 0.03; 
+        z-index: -1000; 
+        pointer-events: none;
+    }
+    
+    /* Header Bar for User Info & Logout */
+    .header-bar {
+        background-color: var(--logo-red-tint-light);
+        padding: 10px 25px;
+        margin: -20px -20px 20px -20px; /* Span full width above padding */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        position: sticky; 
+        top: 0;
+        z-index: 100; 
+    }
+    .header-bar .app-title-link {
+        text-decoration: none;
+        color: var(--heading-color);
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .header-bar .user-info-display {
+        font-size: 0.9rem;
+        color: var(--main-text-color);
+    }
+    .header-bar .user-info-display span {
+        font-weight: 600;
+    }
+    .header-bar #logout-button-header {
+        background-color: var(--button-bg);
+        color: var(--button-text-color);
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+    .header-bar #logout-button-header:hover {
+        background-color: var(--button-hover-bg);
+    }
+
+
+    /* Form Container Styling */
+    .container {
+      max-width: 800px;
+      background: var(--form-container-bg);
+      margin: 30px auto; 
+      padding: 30px 40px;
+      border-radius: var(--border-radius-lg);
+      box-shadow: 0 8px 24px var(--shadow-color);
+      position: relative; 
+      z-index: 1; 
+    }
+
+    /* Heading Styling */
+    h1 {
+      font-weight: 700;
+      font-size: 2.2rem; 
+      text-align: center;
+      margin-top: 0; 
+      margin-bottom: 30px;
+      color: var(--heading-color);
+    }
+
+    /* Label Styling */
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 20px; 
+      margin-bottom: 8px;
+      color: var(--label-color);
+      font-size: 0.95rem; 
+    }
+    label span.required-asterisk { /* Class for asterisk */
+        color: var(--logo-primary-red);
+        font-weight: bold;
+        margin-left: 2px;
+    }
+
+    /* Input Field Styling */
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select { 
+      width: 100%;
+      padding: 12px 15px; 
+      border: 1.5px solid var(--input-border); 
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
+      font-family: var(--font-family);
+      background-color: var(--input-bg);
+      color: var(--input-text-color);
+      transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      box-sizing: border-box;
+    }
+    select[multiple] {
+        height: 120px; /* Adjust height for multi-select */
+        padding: 10px;
+    }
+
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--input-focus-border);
+      background-color: var(--input-focus-bg);
+      outline: none;
+      box-shadow: 0 0 0 3px var(--input-focus-shadow-color);
+    }
+    input::placeholder {
+        color: var(--muted-text-color);
+        opacity: 0.8;
+    }
+
+
+    /* Button Styling */
+    button[type="submit"] {
+      margin-top: 35px; 
+      width: 100%;
+      background-color: var(--button-bg);
+      border: none;
+      padding: 14px;
+      border-radius: var(--border-radius-md);
+      color: var(--button-text-color);
+      font-weight: 700;
+      font-size: 1.1rem; 
+      font-family: var(--font-family);
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(140, 28, 28, 0.2); 
+      transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--button-hover-bg);
+      box-shadow: 0 7px 14px rgba(110, 22, 22, 0.3); 
+      transform: translateY(-2px);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px 25px; 
+      }
+      h1 {
+        font-size: 1.8rem; 
+      }
+      label {
+        margin-top: 15px;
+        font-size: 0.9rem;
+      }
+      input[type="text"],
+      input[type="date"],
+      input[type="number"],
+      select {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+      }
+      button[type="submit"] {
+        font-size: 1rem;
+        padding: 12px;
+        margin-top: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <a href="task-overview.html" class="app-title-link">Aeka Litigation Tracker</a>
+    <div class="user-info-display">
+        Logged in as: <span id="user-email-role-display">Loading...</span>
+    </div>
+    <button id="logout-button-header">Logout</button>
+  </div>
+
+  <div class="container">
+    <h1>Create a New Case</h1>
+    <form id="create-case-form">
+      <label for="client">Client <span class="required-asterisk">*</span></label>
+      <input type="text" id="client" required placeholder="Enter client name"/>
+
+      <label for="state">State <span class="required-asterisk">*</span></label>
+      <input type="text" id="state" required placeholder="Enter state"/>
+
+      <label for="leadNameDisplay">Primary Lead <span class="required-asterisk">*</span></label>
+      <input type="text" id="leadNameDisplay" placeholder="Primary lead for the case" required /> 
+      
+      <label for="teammates">Assign Teammates (Optional):</label>
+      <select id="teammates" multiple>
+        </select>
+      <small style="display: block; margin-top: 4px; color: var(--muted-text-color);">Hold Ctrl (or Cmd on Mac) to select multiple teammates.</small>
+
+
+      <label for="currentStage">Current Stage</label>
+      <input type="text" id="currentStage" placeholder="e.g., Investigation, Hearing"/>
+
+      <label for="nextStep">Next Step</label>
+      <input type="text" id="nextStep" placeholder="e.g., File reply, Attend meeting"/>
+
+      <label for="issue">Issue (Primary)</label>
+      <input type="text" id="issue" placeholder="Primary issue of the case"/>
+
+      <label for="status">Status</label>
+      <select id="status">
+          <option value="Open" selected>Open</option>
+          <option value="Pending">Pending</option>
+          <option value="Closed">Closed</option>
+      </select>
+
+
+      <label for="period">Period</label>
+      <input type="text" id="period" placeholder="e.g., FY 2022-23"/>
+
+      <label for="caseId">Case ID (Internal)</label>
+      <input type="text" id="caseId" placeholder="Your internal case identifier"/>
+
+      <label for="adt01ReferenceId">ADT-01 Reference ID</label>
+      <input type="text" id="adt01ReferenceId" />
+      <label for="dateOfAdt01">Date of ADT-01</label>
+      <input type="date" id="dateOfAdt01" />
+
+      <label for="adt02ReferenceId">ADT-02 Reference ID</label>
+      <input type="text" id="adt02ReferenceId" />
+      <label for="dateOfAdt02">Date of ADT-02</label>
+      <input type="date" id="dateOfAdt02" />
+
+      <label for="asmt10">ASMT 10</label>
+      <input type="text" id="asmt10" />
+      <label for="dateOfAsmt10">Date of ASMT 10</label>
+      <input type="date" id="dateOfAsmt10" />
+
+      <label for="drc01AReferenceId">DRC-01A Reference ID</label>
+      <input type="text" id="drc01AReferenceId" />
+      <label for="dateOfDrc01A">Date of DRC-01A</label>
+      <input type="date" id="dateOfDrc01A" />
+
+      <label for="drc01ReferenceId">DRC-01 Reference ID</label>
+      <input type="text" id="drc01ReferenceId" />
+      <label for="dateOfDrc01">Date of DRC-01</label>
+      <input type="date" id="dateOfDrc01" />
+
+      <label for="reminderReferenceNo">Reminder Reference No.</label>
+      <input type="text" id="reminderReferenceNo" />
+      <label for="reminderReferenceDate">Reminder Reference Date</label>
+      <input type="date" id="reminderReferenceDate" />
+
+      <label for="dueDateOfReply">Due Date of Reply</label>
+      <input type="date" id="dueDateOfReply" />
+      <label for="dueReplyFiled">Reply Filed Date</label> 
+      <input type="date" id="dueReplyFiled" />
+
+      <label for="orderReferenceId">Order Reference ID</label>
+      <input type="text" id="orderReferenceId" />
+      <label for="dateOfOrder">Date of Order</label>
+      <input type="date" id="dateOfOrder" />
+
+      <label for="oiaReferenceId">OIA Reference ID</label>
+      <input type="text" id="oiaReferenceId" />
+      <label for="dateOfOia">Date of OIA</label>
+      <input type="date" id="dateOfOia" />
+
+      <label for="appealDueDate">Appeal Due Date</label>
+      <input type="date" id="appealDueDate" />
+      <label for="appealFiledDate">Appeal Filed Date</label>
+      <input type="date" id="appealFiledDate" />
+
+      <label for="apl02Arn">APL-02 ARN</label>
+      <input type="text" id="apl02Arn" />
+      <label for="apl02Status">APL-02 Status</label>
+      <input type="text" id="apl02Status" />
+      <label for="apl02StatusDate">APL-02 Status Date</label>
+      <input type="date" id="apl02StatusDate" />
+      <label for="apl02Date">APL-02 Date</label>
+      <input type="date" id="apl02Date" />
+
+      <label for="issues">Issues (Detailed)</label> 
+      <input type="text" id="issues" placeholder="Detailed description of issues"/>
+
+      <label for="igst">IGST</label>
+      <input type="number" id="igst" step="0.01" placeholder="0.00"/>
+      <label for="cgst">CGST</label>
+      <input type="number" id="cgst" step="0.01" placeholder="0.00"/>
+      <label for="sgst">SGST</label>
+      <input type="number" id="sgst" step="0.01" placeholder="0.00"/>
+      <label for="interest">Interest</label>
+      <input type="number" id="interest" step="0.01" placeholder="0.00"/>
+      <label for="penalty">Penalty</label>
+      <input type="number" id="penalty" step="0.01" placeholder="0.00"/>
+      <label for="totalDemand">Total Demand</label>
+      <input type="number" id="totalDemand" step="0.01" placeholder="0.00"/>
+
+      <label for="paymentReferenceNumber">Payment Reference No.</label>
+      <input type="text" id="paymentReferenceNumber" />
+      <label for="paymentDate">Payment Date</label>
+      <input type="date" id="paymentDate" />
+      <label for="paymentAmount">Payment Amount</label>
+      <input type="number" id="paymentAmount" step="0.01" placeholder="0.00"/>
+
+      <button type="submit">Save Case</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; // Added getDocs
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+    
+    import { firebaseConfig } from './firebase_config.js'; 
+
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("create-case-form");
+    const userEmailRoleDisplay = document.getElementById("user-email-role-display");
+    const logoutButtonHeader = document.getElementById("logout-button-header");
+    const leadNameDisplayInput = document.getElementById("leadNameDisplay"); 
+    const teammatesSelect = document.getElementById("teammates"); // Teammate selector
+    let currentUser = null;
+    let allUsers = []; // To store fetched users for teammate selection
+
+    // Function to fetch users to populate teammate selector
+    async function loadUsersForTeammateSelection() {
+        if (!currentUser) return; // Don't load if no current user
+
+        try {
+            const usersSnapshot = await getDocs(collection(db, "userProfiles"));
+            allUsers = []; // Clear previous list
+            usersSnapshot.forEach(doc => {
+                const userData = doc.data();
+                // Add user to list if they are not the current user
+                if (doc.id !== currentUser.uid) { 
+                    allUsers.push({ uid: doc.id, name: userData.displayName || userData.email, email: userData.email });
+                }
+            });
+
+            // Populate the select dropdown
+            if (teammatesSelect) {
+                teammatesSelect.innerHTML = ''; // Clear existing options
+                allUsers.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.uid;
+                    option.textContent = user.name; // Display name or email
+                    teammatesSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error("Error loading users for teammate selection:", error);
+        }
+    }
+
+
+    // Authentication and Role Check
+    onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+            const storedUserJSON = localStorage.getItem('currentUser');
+            if (storedUserJSON) {
+                currentUser = JSON.parse(storedUserJSON);
+                if (currentUser.uid === firebaseUser.uid) {
+                    if (currentUser.role === 'viewer') {
+                        alert("Viewers are not authorized to create cases. Redirecting to dashboard.");
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                    // Populate user info in header
+                    const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                    if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
+                    
+                    // Auto-fill lead name for 'caseLead' and 'teamLead' (creator is primary lead by default)
+                    if(leadNameDisplayInput) {
+                        leadNameDisplayInput.value = currentUser.displayName || currentUser.email;
+                        // TeamLead can change this if assigning to someone else primarily,
+                        // CaseLead's name is fixed as they are the primary lead.
+                        leadNameDisplayInput.readOnly = (currentUser.role === 'caseLead'); 
+                    }
+                    loadUsersForTeammateSelection(); // Load users for teammate selection
+
+                } else {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                }
+            } else {
+                 // If not in localStorage, try to fetch (should ideally be set at login)
+                console.warn("Create Case: No currentUser in localStorage. Attempting to fetch...");
+                // For robustness, you might want to fetch from Firestore here or just redirect to login
+                window.location.href = 'index.html'; 
+            }
+        } else {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    });
+
+    if(logoutButtonHeader) {
+        logoutButtonHeader.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }).catch((error) => console.error('Sign out error', error));
+        });
+    }
+
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!currentUser) {
+          alert("User not authenticated. Please log in.");
+          return;
+      }
+      if (currentUser.role === 'viewer') {
+          alert("Viewers cannot create cases.");
+          return;
+      }
+
+      // Prepare assignedUsersUids array
+      const assignedUsersUids = [currentUser.uid]; // Creator is always assigned
+      const selectedTeammates = Array.from(teammatesSelect.selectedOptions).map(option => option.value);
+      selectedTeammates.forEach(uid => {
+          if (!assignedUsersUids.includes(uid)) {
+              assignedUsersUids.push(uid);
+          }
+      });
+      
+      // Get primary lead details (creator is default primary lead)
+      const primaryLeadName = leadNameDisplayInput.value.trim();
+      const primaryLeadUid = currentUser.uid; // By default, creator is primary lead. 
+                                           // A team lead could potentially change this if UI allowed selecting a different primary.
+
+      const caseData = {
+        client: form.client.value.trim(),
+        state: form.state.value.trim(),
+        
+        // Storing primary lead info + array of all assigned UIDs
+        leadName: primaryLeadName, 
+        leadUid: primaryLeadUid, // UID of the primary lead (creator by default)
+        assignedUsersUids: assignedUsersUids, // Array of UIDs including creator and teammates
+
+        currentStage: form.currentStage.value.trim(),
+        nextStep: form.nextStep.value.trim(),
+        issue: form.issue.value.trim(),
+        status: form.status.value, 
+        period: form.period.value.trim(),
+        caseId: form.caseId.value.trim(),
+        adt01ReferenceId: form.adt01ReferenceId.value.trim(),
+        dateOfAdt01: form.dateOfAdt01.value || null,
+        adt02ReferenceId: form.adt02ReferenceId.value.trim(),
+        dateOfAdt02: form.dateOfAdt02.value || null,
+        asmt10: form.asmt10.value.trim(),
+        dateOfAsmt10: form.dateOfAsmt10.value || null,
+        drc01AReferenceId: form.drc01AReferenceId.value.trim(),
+        dateOfDrc01A: form.dateOfDrc01A.value || null,
+        drc01ReferenceId: form.drc01ReferenceId.value.trim(),
+        dateOfDrc01: form.dateOfDrc01.value || null,
+        reminderReferenceNo: form.reminderReferenceNo.value.trim(),
+        reminderReferenceDate: form.reminderReferenceDate.value || null,
+        dueDateOfReply: form.dueDateOfReply.value || null,
+        dueReplyFiled: form.dueReplyFiled.value || null,
+        orderReferenceId: form.orderReferenceId.value.trim(),
+        dateOfOrder: form.dateOfOrder.value || null,
+        oiaReferenceId: form.oiaReferenceId.value.trim(),
+        dateOfOia: form.dateOfOia.value || null,
+        appealDueDate: form.appealDueDate.value || null,
+        appealFiledDate: form.appealFiledDate.value || null,
+        apl02Arn: form.apl02Arn.value.trim(),
+        apl02Status: form.apl02Status.value.trim(),
+        apl02StatusDate: form.apl02StatusDate.value || null,
+        apl02Date: form.apl02Date.value || null,
+        issues: form.issues.value.trim(),
+        igst: form.igst.value ? parseFloat(form.igst.value) : null,
+        cgst: form.cgst.value ? parseFloat(form.cgst.value) : null,
+        sgst: form.sgst.value ? parseFloat(form.sgst.value) : null,
+        interest: form.interest.value ? parseFloat(form.interest.value) : null,
+        penalty: form.penalty.value ? parseFloat(form.penalty.value) : null,
+        totalDemand: form.totalDemand.value ? parseFloat(form.totalDemand.value) : null,
+        paymentReferenceNumber: form.paymentReferenceNumber.value.trim(),
+        paymentDate: form.paymentDate.value || null,
+        paymentAmount: form.paymentAmount.value ? parseFloat(form.paymentAmount.value) : null,
+        
+        createdByUid: currentUser.uid,
+        createdByName: currentUser.displayName || currentUser.email,
+        createdAt: new Date() 
+      };
+
+      // Required fields validation
+      if (!caseData.client || !caseData.state || !caseData.leadName) { 
+        alert("Please fill in all required fields: Client, State, and Primary Lead.");
+        return;
+      }
+
+      try {
+        const docRef = await addDoc(collection(db, "cases"), caseData);
+        console.log("Document written with ID: ", docRef.id, " Data:", caseData);
+        alert("Case saved successfully!");
+        form.reset();
+        // Re-populate lead name if caseLead after reset
+        if (currentUser.role === 'caseLead' && leadNameDisplayInput) {
+            leadNameDisplayInput.value = currentUser.displayName || currentUser.email;
+        }
+        // Clear and reload teammate selector
+        if(teammatesSelect) teammatesSelect.innerHTML = '';
+        loadUsersForTeammateSelection();
+
+
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Error saving case. Please check console for details.");
+      }
+    });
+  </script>
+</body>
+</html>

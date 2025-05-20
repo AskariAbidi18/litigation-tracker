@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Aeka Litigation Tracker</title>
+  <style>
+    /* Common Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* Theme Variables: Red, Shades of Red, and White */
+    :root {
+      /* Base Palette for Red Theme */
+      --logo-primary-red: #8C1C1C;         
+      --logo-primary-red-darker: #6E1616;  
+      --logo-primary-red-darkest: #4B1212;
+      
+      --logo-red-tint-light: #F5E8E8;     
+      --logo-red-tint-medium: #D9C3C3;    
+      --logo-text-muted-red: #8C5555;     
+      
+      --neutral-white: #FFFFFF;
+      --neutral-almost-white: #FCFBFB;   
+      --neutral-light-gray: #EAEAEA;    
+
+      /* Mapping to Semantic UI Variables */
+      --page-bg: var(--neutral-almost-white);       
+      --card-bg: var(--neutral-white);              
+      --text-dark: var(--logo-primary-red-darkest); 
+      --text-muted: var(--logo-text-muted-red);     
+      --accent-color: var(--logo-primary-red);      
+      --button-bg: var(--logo-primary-red);         
+      --button-hover-bg: var(--logo-primary-red-darker); 
+      --button-text-color: var(--neutral-white);    
+      --input-border: var(--logo-red-tint-medium);  
+      --input-focus-border: var(--logo-primary-red);
+      --input-focus-shadow-color: rgba(140, 28, 28, 0.25); 
+      --link-color: var(--logo-primary-red);        
+      
+      /* Structural Variables */
+      --peachy-bg: var(--page-bg); 
+      --border-radius-md: 8px;
+      --border-radius-sm: 5px;
+      --shadow-light: rgba(140, 28, 28, 0.08); 
+      --font-family: 'Inter', Arial, sans-serif;
+    }
+
+    /* Global Body Styles */
+    body {
+      font-family: var(--font-family);
+      background-color: var(--page-bg); 
+      color: var(--text-dark); 
+      margin: 0;
+      padding: 20px; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; 
+      box-sizing: border-box;
+    }
+
+    /* Watermark Styling */
+    body::after {
+        content: ""; 
+        background-image: url('images/aekalogo.webp'); /* This is the subtle background watermark (symbol only) */
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 200px auto; 
+        
+        position: fixed; 
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); 
+        
+        width: 200px; 
+        height: 200px; 
+
+        opacity: 0.05; 
+        z-index: -1000;  
+        pointer-events: none; 
+    }
+
+    /* Form Container Styling */
+    .container {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius-md);
+      padding: 35px 40px; 
+      box-shadow: 0 6px 20px var(--shadow-light); 
+      width: 100%;
+      max-width: 420px; 
+      text-align: center;
+      position: relative; 
+      z-index: 1; 
+    }
+    
+    /* Logo Styling for header */
+    .header-logo {
+        width: 180px; /* Adjust width for the logo with text */
+        max-width: 80%; /* Ensure it doesn't overflow container on very small screens */
+        height: auto; /* Maintain aspect ratio */
+        margin-bottom: 20px; /* Increased space below logo */
+    }
+
+
+    /* Heading Styling */
+    h1 {
+      color: var(--accent-color);
+      margin-top: 0; 
+      margin-bottom: 25px; 
+      font-size: 28px; 
+      font-weight: 700;
+    }
+
+    /* Input Field Styling */
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 14px; 
+      margin-bottom: 20px;
+      border: 1px solid var(--input-border);
+      border-radius: var(--border-radius-sm);
+      font-size: 16px;
+      font-family: var(--font-family); 
+      outline: none; 
+      box-sizing: border-box; 
+      color: var(--text-dark);
+      background-color: var(--neutral-white); 
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Placeholder Styling for Inputs */
+    input[type="email"]::placeholder, input[type="password"]::placeholder {
+        color: var(--text-muted); 
+        opacity: 1; 
+    }
+
+    /* Focus Styling for Inputs */
+    input[type="email"]:focus, input[type="password"]:focus {
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px var(--input-focus-shadow-color); 
+    }
+
+    /* Button Styling */
+    button[type="submit"] { 
+      width: 100%;
+      padding: 14px;
+      background-color: var(--button-bg);
+      color: var(--button-text-color); 
+      border: none;
+      border-radius: var(--border-radius-sm);
+      font-size: 16px;
+      font-family: var(--font-family); 
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--button-hover-bg);
+    }
+
+    /* Paragraph Text Styling */
+    p {
+      color: var(--text-muted);
+      margin-top: 25px; 
+      font-size: 15px;
+      line-height: 1.6; 
+    }
+
+    /* Link Styling */
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease; 
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: var(--logo-primary-red-darker); 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="images/WebsiteLogo_1-898735755-1659284008389.webp" alt="Aeka Advisors Litigation Tracker Logo" class="header-logo">
+    <h1>Login</h1>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+  </div>
+
+  <script type="module">
+    // Firebase App and Auth modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+    // Import Firestore modules for fetching user profile
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+    
+    // Firebase configuration (ensure firebase_config.js is in the correct path)
+    import { firebaseConfig } from './firebase_config.js'; 
+
+    // Initialize Firebase app
+    const app = initializeApp(firebaseConfig);
+    // Get Firebase Auth instance
+    const auth = getAuth(app);
+    // Get Firestore instance
+    const db = getFirestore(app);
+
+    // Get the login form element
+    const loginForm = document.getElementById('login-form');
+
+    // Add event listener for form submission
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Attempt to sign in the user with email and password
+      signInWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => { // Made this async to use await for getDoc
+          // Signed in successfully
+          const user = userCredential.user;
+          
+          // Fetch user profile from Firestore to get their role
+          try {
+            const userProfileRef = doc(db, "userProfiles", user.uid);
+            const userProfileSnap = await getDoc(userProfileRef);
+
+            if (userProfileSnap.exists()) {
+              const userProfile = userProfileSnap.data();
+              // Store user info (including role) in localStorage
+              localStorage.setItem('currentUser', JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                role: userProfile.role || 'viewer', // Default to 'viewer' if role not found
+                displayName: userProfile.displayName || user.email // Fallback for displayName
+              }));
+              console.log("User logged in. Role:", userProfile.role);
+              // Redirect to the task overview page
+              window.location.href = 'task-overview.html'; 
+            } else {
+              // Profile doesn't exist, which is unexpected if signup creates one.
+              // For now, treat as a viewer or handle as an error.
+              console.warn("User profile not found in Firestore for UID:", user.uid);
+              localStorage.setItem('currentUser', JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                role: 'viewer', // Default to viewer
+                displayName: user.email
+              }));
+              alert('Login successful, but profile information is missing. Defaulting to viewer access.');
+              window.location.href = 'task-overview.html';
+            }
+          } catch (firestoreError) {
+            console.error("Error fetching user profile:", firestoreError);
+            // Even if profile fetch fails, user is authenticated. Decide on behavior.
+            // For now, let them proceed but maybe with a default role or an error message.
+            localStorage.setItem('currentUser', JSON.stringify({ // Store basic auth info
+                uid: user.uid,
+                email: user.email,
+                role: 'viewer' // Default to viewer on error
+            }));
+            alert('Login successful, but could not retrieve profile details. Proceeding with limited access.');
+            window.location.href = 'task-overview.html'; 
+          }
+        })
+        .catch((error) => {
+          // Handle errors during login
+          const errorMessage = error.message; 
+          alert('Login failed: ' + errorMessage); 
+          console.error("Login Error:", error); 
+        });
+    });
+  </script>
+</body>
+</html>

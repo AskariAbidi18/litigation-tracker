@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – Aeka Litigation Tracker</title>
+
+  <style>
+    /* Common Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* Theme Variables: Red, Shades of Red, and White */
+    :root {
+      /* Base Palette for Red Theme */
+      --logo-primary-red: #8C1C1C;
+      --logo-primary-red-darker: #6E1616;
+      --logo-primary-red-darkest: #4B1212;
+      
+      --logo-red-tint-light: #F5E8E8;    
+      --logo-red-tint-medium: #D9C3C3;   
+      --logo-red-tint-table-header: #EADCDC; 
+      --logo-red-tint-row-hover: #F8F0F0;   
+
+      --logo-text-muted-red: #8C5555;
+      
+      --neutral-white: #FFFFFF;
+      --neutral-almost-white: #FCFBFB;
+      --neutral-light-gray: #f1f1f1; 
+
+      /* UI Specific Variables */
+      --page-bg: var(--neutral-almost-white);
+      --main-text-color: var(--logo-primary-red-darkest);
+      --heading-color: var(--logo-primary-red);
+      --muted-text-color: var(--logo-text-muted-red);
+      
+      --input-bg: var(--neutral-white);
+      --input-border: var(--logo-red-tint-medium);
+      --input-focus-border: var(--logo-primary-red);
+      --input-focus-shadow-color: rgba(140, 28, 28, 0.25);
+
+      --table-bg: var(--neutral-white);
+      --table-border-color: var(--logo-red-tint-medium);
+      --table-header-bg: var(--logo-red-tint-table-header);
+      --table-header-text-color: var(--logo-primary-red-darkest);
+      --table-row-even-bg: var(--neutral-almost-white); 
+      --table-row-hover-bg: var(--logo-red-tint-row-hover);
+
+      --button-bg: var(--logo-primary-red);
+      --button-hover-bg: var(--logo-primary-red-darker);
+      --button-text-color: var(--neutral-white);
+
+      --modal-bg: var(--neutral-white);
+      --modal-border-color: var(--logo-red-tint-medium);
+      --modal-close-color: var(--logo-primary-red-darker);
+      --modal-fieldset-border: var(--logo-red-tint-medium);
+      --modal-legend-color: var(--logo-primary-red);
+      
+      /* Structural Variables */
+      --border-radius-sm: 4px; 
+      --border-radius-md: 8px; 
+      --shadow-color: rgba(140, 28, 28, 0.1); 
+      --font-family: 'Inter', Arial, sans-serif;
+    }
+
+    /* Global Body Styles */
+    body {
+      font-family: var(--font-family);
+      margin: 0;
+      padding: 0; 
+      background: var(--page-bg);
+      color: var(--main-text-color);
+    }
+
+    /* Watermark Styling */
+    body::after {
+        content: "";
+        background-image: url('images/aekalogo.webp'); 
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 300px auto; 
+        
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        width: 300px; 
+        height: 300px;
+
+        opacity: 0.025; 
+        z-index: -1000; 
+        pointer-events: none;
+    }
+    
+    /* Header Bar for User Info & Logout */
+    .header-bar {
+        background-color: var(--logo-red-tint-light);
+        padding: 10px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        position: sticky;
+        top: 0;
+        z-index: 100; /* Above watermark, below modal overlay */
+    }
+    .header-bar .user-info-display {
+        font-size: 0.9rem;
+        color: var(--main-text-color);
+    }
+    .header-bar .user-info-display span {
+        font-weight: 600;
+    }
+    .header-bar #logout-button-header {
+        background-color: var(--button-bg);
+        color: var(--button-text-color);
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+    .header-bar #logout-button-header:hover {
+        background-color: var(--button-hover-bg);
+    }
+
+
+    /* Main Heading */
+    h1 {
+      text-align: center;
+      font-size: 2.2em; 
+      color: var(--heading-color);
+      margin: 25px 20px; 
+    }
+
+    /* Filters Section */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start; 
+      margin: 20px auto; 
+      padding: 15px;
+      gap: 20px;
+      background-color: var(--neutral-white); 
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 2px 5px var(--shadow-color);
+      max-width: 1200px; 
+      position: relative; /* For stacking context */
+      z-index: 1;
+    }
+
+    .filters label {
+      margin-right: 8px;
+      font-size: 14px;
+      color: var(--muted-text-color);
+      font-weight: 600;
+    }
+
+    .filters input, .filters select {
+      padding: 9px 12px; 
+      font-size: 14px;
+      font-family: var(--font-family);
+      width: 230px; 
+      border: 1px solid var(--input-border);
+      border-radius: var(--border-radius-sm);
+      background-color: var(--input-bg);
+      color: var(--main-text-color);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .filters input::placeholder { color: var(--muted-text-color); opacity: 0.8; }
+
+
+    .filters input:focus, .filters select:focus {
+      border-color: var(--input-focus-border);
+      outline: none;
+      box-shadow: 0 0 0 3px var(--input-focus-shadow-color);
+    }
+     /* Custom arrow for select */
+    .filters select {
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234B1212%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: .65em auto;
+        padding-right: 2rem; /* Make space for arrow */
+    }
+
+
+    /* Scrollable Table Area */
+    .scrollable {
+      overflow-x: auto;
+      margin: 25px 20px; 
+      border-radius: var(--border-radius-md); 
+      box-shadow: 0 4px 12px var(--shadow-color); 
+      position: relative; /* For stacking context */
+      z-index: 1; 
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse; 
+      background-color: var(--table-bg);
+    }
+
+    th, td {
+      padding: 12px 15px; 
+      text-align: left;
+      border-bottom: 1px solid var(--table-border-color);
+      font-size: 14px;
+      white-space: nowrap; 
+    }
+    td:last-child, th:last-child { 
+        white-space: normal; 
+    }
+
+    th {
+      background-color: var(--table-header-bg);
+      color: var(--table-header-text-color);
+      font-weight: 700; 
+      position: sticky; 
+      top: 0; 
+      z-index: 10; 
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--table-row-even-bg);
+    }
+
+    tr:hover {
+      background-color: var(--table-row-hover-bg);
+    }
+
+    /* Buttons (General and Specific) */
+    button {
+      background-color: var(--button-bg);
+      color: var(--button-text-color);
+      border: none;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-family: var(--font-family);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--border-radius-sm);
+      margin-right: 8px; 
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    button:last-child {
+        margin-right: 0; 
+    }
+
+    button:hover {
+      background-color: var(--button-hover-bg);
+      transform: translateY(-1px); 
+    }
+    
+    /* Export Buttons Section */
+    .export-buttons {
+      display: flex;
+      justify-content: flex-start;
+      gap: 15px; 
+      margin: 20px 20px 25px 20px; 
+      padding-left: 5px; 
+      position: relative; /* For stacking context */
+      z-index: 1;
+    }
+     .export-buttons button {
+        padding: 10px 20px; 
+     }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%; 
+      left: 50%;
+      transform: translate(-50%, -50%); 
+      background-color: var(--modal-bg);
+      border: 1px solid var(--modal-border-color);
+      padding: 20px; 
+      z-index: 1001; 
+      max-height: 85vh; 
+      overflow-y: auto;
+      width: clamp(300px, 80vw, 900px); 
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+    }
+    .modal-header { 
+        color: var(--heading-color);
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.6em; 
+        font-weight: 700;
+        border-bottom: 1.5px solid var(--input-border); 
+        padding-bottom: 15px;
+        text-align: center;
+    }
+    .modal-section { 
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid var(--modal-fieldset-border);
+        border-radius: var(--border-radius-sm);
+    }
+    .modal-section-title { 
+        font-weight: 700;
+        font-size: 1.1em;
+        color: var(--modal-legend-color);
+        margin-bottom: 12px;
+        padding-bottom: 5px;
+        border-bottom: 1px dashed var(--modal-fieldset-border);
+    }
+    .modal-section p {
+        margin: 0 0 8px 5px; 
+        line-height: 1.6;
+        color: var(--main-text-color);
+        font-size: 0.95rem;
+    }
+    .modal-section p strong {
+        color: var(--logo-primary-red-darker);
+        font-weight: 600;
+        min-width: 180px; 
+        display: inline-block; 
+        margin-right: 5px; 
+    }
+
+    .modal-close {
+      position: absolute; 
+      top: 15px;
+      right: 20px;
+      font-size: 24px; 
+      color: var(--modal-close-color);
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .modal-close:hover {
+        color: var(--logo-primary-red-darkest);
+    }
+
+    /* Overlay for Modal */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); 
+      z-index: 1000; 
+    }
+    /* Utility class to hide elements */
+    .hidden {
+        display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <div class="user-info-display">
+        Logged in as: <span id="user-email-role-display">Loading...</span>
+    </div>
+    <button id="logout-button-header">Logout</button>
+  </div>
+
+  <h1>Litigation Dashboard</h1>
+
+  <div class="filters">
+    <label for="filter-client">Client:</label>
+    <input type="text" id="filter-client" placeholder="Enter client name" />
+    
+    <label for="filter-status">Status:</label>
+    <select id="filter-status">
+      <option value="">All</option>
+      <option value="Open">Open</option>
+      <option value="Pending">Pending</option>
+      <option value="Closed">Closed</option>
+    </select>
+
+    <label for="filter-due-date">Due Date of Reply:</label>
+    <input type="date" id="filter-due-date" />
+  </div>
+
+  <div class="export-buttons">
+    <button id="exportCSV">Export to CSV</button>
+  </div>
+
+  <div class="scrollable">
+    <table id="cases-table">
+      <thead>
+        <tr>
+          <th>Client</th><th>State</th><th>Lead</th><th>Current Stage</th><th>Next Step</th><th>Issue</th><th>Status</th>
+          <th>Due Date of Reply</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        </tbody>
+    </table>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="caseModal">
+    <span class="modal-close" id="modalClose" title="Close">✖</span>
+    <div id="modalContent">
+      </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc, query, where, getDoc as getFirestoreDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; 
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+
+    import { firebaseConfig } from './firebase_config.js'; 
+
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const tableBody = document.querySelector("#cases-table tbody");
+    const filterClient = document.getElementById("filter-client");
+    const filterStatus = document.getElementById("filter-status");
+    const filterDueDate = document.getElementById("filter-due-date");
+
+    const overlay = document.getElementById("overlay");
+    const modal = document.getElementById("caseModal");
+    const modalContent = document.getElementById("modalContent");
+    const modalClose = document.getElementById("modalClose");
+    const exportCSVButton = document.getElementById("exportCSV"); 
+    const userEmailRoleDisplay = document.getElementById("user-email-role-display");
+    const logoutButtonHeader = document.getElementById("logout-button-header");
+
+    let allCasesMaster = []; 
+    let currentlyDisplayedCases = []; 
+    let currentUser = null; 
+
+    function updateGlobalUIBasedOnRole() {
+        if (currentUser && currentUser.role) {
+            const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
+            
+            if (currentUser.role === 'viewer') {
+                if(exportCSVButton) exportCSVButton.classList.add('hidden');
+            } else {
+                if(exportCSVButton) exportCSVButton.classList.remove('hidden');
+            }
+        } else {
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Not logged in';
+            if(exportCSVButton) exportCSVButton.classList.add('hidden'); 
+        }
+    }
+    
+    onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+            const storedUserJSON = localStorage.getItem('currentUser');
+            if (storedUserJSON) {
+                try {
+                    currentUser = JSON.parse(storedUserJSON); 
+                    if (currentUser.uid === firebaseUser.uid) { 
+                        updateGlobalUIBasedOnRole(); 
+                        loadCases(); 
+                    } else {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'index.html'; 
+                    }
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html'; 
+                }
+            } else {
+                const userProfileRef = doc(db, "userProfiles", firebaseUser.uid);
+                getFirestoreDoc(userProfileRef).then(docSnap => {
+                    if (docSnap.exists()) {
+                        currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, ...docSnap.data() };
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        updateGlobalUIBasedOnRole();
+                        loadCases();
+                    } else {
+                        console.warn("Dashboard: User profile not found in Firestore. Redirecting to login.");
+                        localStorage.removeItem('currentUser'); 
+                        window.location.href = 'index.html';
+                    }
+                }).catch(error => {
+                    console.error("Dashboard: Error fetching user profile on auth change:", error);
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                });
+            }
+        } else {
+            localStorage.removeItem('currentUser');
+            currentUser = null; 
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Redirecting to login...';
+            window.location.href = 'index.html'; 
+        }
+    });
+
+    if(logoutButtonHeader) {
+        logoutButtonHeader.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                window.location.href = 'index.html';
+            }).catch((error) => console.error('Sign out error', error));
+        });
+    }
+
+    function formatDate(dateValue) {
+      if (!dateValue) return ''; 
+      try {
+        const date = (dateValue && typeof dateValue.toDate === 'function') ? dateValue.toDate() : new Date(dateValue);
+        if (isNaN(date.getTime())) return ''; 
+        return date.toISOString().split('T')[0]; 
+      } catch (e) {
+        return ''; 
+      }
+    }
+
+    function renderTable(dataToRender) { 
+      tableBody.innerHTML = ''; 
+      currentlyDisplayedCases = dataToRender; 
+
+      const userRole = currentUser ? currentUser.role : 'viewer'; 
+
+      if (dataToRender.length === 0) {
+        let message = "No cases found.";
+        if (filterClient.value || filterStatus.value || filterDueDate.value) {
+            message = "No cases match the current filters.";
+        }
+        // Removed the specific 'caseLead' message here as they now see all cases by default
+        tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">${message}</td></tr>`;
+        return;
+      }
+
+      dataToRender.forEach((caseData, index) => { 
+        const row = document.createElement("tr");
+        
+        let actionButtonsHtml = `<button onclick="showModal(${index})" title="View Details">View</button>`;
+        
+        let canEditDelete = false;
+        if (userRole === 'teamLead') {
+            canEditDelete = true;
+        } else if (userRole === 'caseLead' && caseData.assignedUsersUids && caseData.assignedUsersUids.includes(currentUser.uid)) { 
+            // Case Lead can edit/delete ONLY if they are in the assignedUsersUids array for THIS case
+            canEditDelete = true;
+        }
+        // Viewers (userRole === 'viewer') will have canEditDelete as false by default
+
+        if (canEditDelete) {
+            actionButtonsHtml += ` <button onclick="editCase('${caseData.id}')" title="Edit Case">Edit</button>`;
+            actionButtonsHtml += ` <button onclick="deleteCase('${caseData.id}')" title="Delete Case">Delete</button>`;
+        }
+
+        row.innerHTML = `
+          <td>${caseData.client || ''}</td>
+          <td>${caseData.state || ''}</td>
+          <td>${caseData.primaryLeadName || caseData.leadName || caseData.lead || ''}</td> 
+          <td>${caseData.currentStage || ''}</td>
+          <td>${caseData.nextStep || ''}</td>
+          <td>${caseData.issue || ''}</td>
+          <td>${caseData.status || ''}</td>
+          <td>${formatDate(caseData.dueDateOfReply)}</td>
+          <td>${actionButtonsHtml}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function createModalParagraph(label, value, isDate = false) {
+        const displayValue = isDate ? formatDate(value) : (value !== undefined && value !== null ? value : '');
+        if (displayValue.toString().trim() !== '' || (typeof displayValue === 'number' && displayValue === 0)) {
+            return `<p><strong>${label}:</strong> ${displayValue || 'N/A'}</p>`;
+        }
+        return `<p><strong>${label}:</strong> N/A</p>`;
+    }
+    
+    async function getTeammateNames(assignedUids, primaryLeadUid) {
+        if (!Array.isArray(assignedUids) || assignedUids.length === 0) return 'None';
+        
+        const teammateNames = [];
+        const coLeadUidsToFetch = assignedUids.filter(uid => uid !== primaryLeadUid);
+
+        if (coLeadUidsToFetch.length === 0) return 'None';
+
+        for (const uid of coLeadUidsToFetch) {
+            try {
+                const userDocRef = doc(db, "userProfiles", uid);
+                const userDocSnap = await getFirestoreDoc(userDocRef); 
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    teammateNames.push(userData.displayName || userData.email);
+                } else {
+                    teammateNames.push(`UID: ${uid.substring(0,7)}... (Profile not found)`);
+                }
+            } catch (error) {
+                console.error("Error fetching teammate profile for UID:", uid, error);
+                teammateNames.push(`Error fetching profile`);
+            }
+        }
+        return teammateNames.length > 0 ? teammateNames.join(', ') : 'None';
+    }
+
+    function createModalSection(title, contentHtml) {
+        return `
+            <div class="modal-section">
+                <div class="modal-section-title">${title}</div>
+                ${contentHtml.trim() ? contentHtml : '<p style="margin-left: 5px; color: var(--muted-text-color);">No data available for this section.</p>'}
+            </div>
+        `;
+    }
+
+    window.showModal = async (index) => { 
+      const caseData = currentlyDisplayedCases[index]; 
+      modalContent.innerHTML = '<p style="text-align:center; color:var(--muted-text-color);">Loading details...</p>'; 
+      
+      let clientDetailsHtml = '';
+      clientDetailsHtml += createModalParagraph("State", caseData.state);
+      clientDetailsHtml += createModalParagraph("Primary Lead", caseData.primaryLeadName || caseData.leadName || caseData.lead); 
+      
+      const teammateNames = await getTeammateNames(caseData.assignedUsersUids, caseData.primaryLeadUid || caseData.leadUid);
+      clientDetailsHtml += createModalParagraph("Co-Leads/Teammates", teammateNames);
+
+      clientDetailsHtml += createModalParagraph("Current Stage", caseData.currentStage);
+      clientDetailsHtml += createModalParagraph("Next Step", caseData.nextStep);
+      clientDetailsHtml += createModalParagraph("Primary Issue", caseData.issue); 
+      clientDetailsHtml += createModalParagraph("Status", caseData.status);
+      clientDetailsHtml += createModalParagraph("Period", caseData.period);
+      clientDetailsHtml += createModalParagraph("Case ID (Internal)", caseData.caseId || caseData.id);
+
+      let adtDetailsHtml = '';
+      adtDetailsHtml += createModalParagraph("ADT-01 Reference ID", caseData.adt01ReferenceId);
+      adtDetailsHtml += createModalParagraph("Date of ADT-01", caseData.dateOfAdt01, true);
+      adtDetailsHtml += createModalParagraph("ADT-02 Reference ID", caseData.adt02ReferenceId);
+      adtDetailsHtml += createModalParagraph("Date of ADT-02", caseData.dateOfAdt02, true);
+
+      let asmtDetailsHtml = '';
+      asmtDetailsHtml += createModalParagraph("ASMT-10", caseData.asmt10);
+      asmtDetailsHtml += createModalParagraph("Date of ASMT-10", caseData.dateOfAsmt10, true);
+      
+      let drcDetailsHtml = '';
+      drcDetailsHtml += createModalParagraph("DRC-01A Reference ID", caseData.drc01aReferenceId || caseData.drc01AReferenceId); 
+      drcDetailsHtml += createModalParagraph("Date of DRC-01A", caseData.dateOfDrc01a || caseData.dateOfDrc01A, true); 
+      drcDetailsHtml += createModalParagraph("DRC-01 Reference ID", caseData.drc01ReferenceId);
+      drcDetailsHtml += createModalParagraph("Date of DRC-01", caseData.dateOfDrc01, true);
+
+      let reminderDetailsHtml = '';
+      reminderDetailsHtml += createModalParagraph("Reminder Reference No.", caseData.reminderReferenceNo);
+      reminderDetailsHtml += createModalParagraph("Reminder Reference Date", caseData.reminderReferenceDate, true);
+
+      let replyDetailsHtml = '';
+      replyDetailsHtml += createModalParagraph("Due Date of Reply", caseData.dueDateOfReply, true);
+      replyDetailsHtml += createModalParagraph("Reply Filed Date", caseData.dueReplyFiled, true); 
+
+      let orderDetailsHtml = '';
+      orderDetailsHtml += createModalParagraph("Order Reference ID", caseData.orderReferenceId);
+      orderDetailsHtml += createModalParagraph("Date of Order", caseData.dateOfOrder, true);
+      
+      let oiaDetailsHtml = '';
+      oiaDetailsHtml += createModalParagraph("OIA Reference ID", caseData.oiaReferenceId);
+      oiaDetailsHtml += createModalParagraph("Date of OIA", caseData.dateOfOia, true);
+
+      let appealDetailsHtml = '';
+      appealDetailsHtml += createModalParagraph("Appeal Due Date", caseData.appealDueDate, true);
+      appealDetailsHtml += createModalParagraph("Appeal Filed Date", caseData.appealFiledDate, true);
+      appealDetailsHtml += createModalParagraph("APL-02 ARN", caseData.apl02Arn);
+      appealDetailsHtml += createModalParagraph("APL-02 Status", caseData.apl02Status);
+      appealDetailsHtml += createModalParagraph("Status Date (Appeal)", caseData.statusDate || caseData.apl02StatusDate, true); 
+      appealDetailsHtml += createModalParagraph("APL-02 Date", caseData.apl02Date, true);
+      
+      let financialDetailsHtml = '';
+      financialDetailsHtml += createModalParagraph("Issues (Detailed)", caseData.issues); 
+      financialDetailsHtml += createModalParagraph("IGST", caseData.igst);
+      financialDetailsHtml += createModalParagraph("CGST", caseData.cgst);
+      financialDetailsHtml += createModalParagraph("SGST", caseData.sgst);
+      financialDetailsHtml += createModalParagraph("Interest", caseData.interest);
+      financialDetailsHtml += createModalParagraph("Penalty", caseData.penalty);
+      financialDetailsHtml += createModalParagraph("Total Demand", caseData.totalDemand);
+
+      let paymentDetailsHtml = '';
+      paymentDetailsHtml += createModalParagraph("Payment Reference Number", caseData.paymentReferenceNumber);
+      paymentDetailsHtml += createModalParagraph("Payment Date", caseData.paymentDate, true);
+      paymentDetailsHtml += createModalParagraph("Payment Amount", caseData.paymentAmount);
+
+      modalContent.innerHTML = `
+        <div class="modal-header">Case Details: ${caseData.client || 'N/A'}</div>
+        ${createModalSection("General Case Information", clientDetailsHtml)}
+        ${createModalSection("ADT Details", adtDetailsHtml)}
+        ${createModalSection("ASMT Details", asmtDetailsHtml)}
+        ${createModalSection("DRC Details", drcDetailsHtml)}
+        ${createModalSection("Reminder Details", reminderDetailsHtml)}
+        ${createModalSection("Reply Details", replyDetailsHtml)}
+        ${createModalSection("Order Details", orderDetailsHtml)}
+        ${createModalSection("OIA Details", oiaDetailsHtml)}
+        ${createModalSection("Appeal Details", appealDetailsHtml)}
+        ${createModalSection("Financial Details", financialDetailsHtml)}
+        ${createModalSection("Payment Details", paymentDetailsHtml)}
+      `;
+      modal.style.display = 'block';
+      overlay.style.display = 'block';
+    };
+
+    modalClose.onclick = () => {
+      modal.style.display = 'none';
+      overlay.style.display = 'none';
+    };
+    overlay.onclick = () => {
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+    };
+
+    window.deleteCase = async (id) => {
+      if (!currentUser || currentUser.role === 'viewer') { 
+          alert("Viewers are not permitted to delete cases.");
+          return;
+      }
+      
+      const caseToDelete = allCasesMaster.find(c => c.id === id); 
+      if (currentUser.role === 'caseLead' && (!caseToDelete || !caseToDelete.assignedUsersUids?.includes(currentUser.uid))) {
+         alert("You can only delete cases to which you are assigned."); return;
+      }
+
+      if (confirm("Are you sure you want to delete this case? This action cannot be undone.")) {
+        try {
+          await deleteDoc(doc(db, "cases", id));
+          loadCases(); 
+        } catch (error) {
+          console.error("Error deleting case: ", error);
+          alert("Failed to delete case. See console for details.");
+        }
+      }
+    };
+
+    window.editCase = (id) => {
+      if (!currentUser || currentUser.role === 'viewer') { 
+          alert("Viewers are not permitted to edit cases.");
+          return;
+      }
+      const caseToEdit = allCasesMaster.find(c => c.id === id); 
+      if (currentUser.role === 'caseLead' && (!caseToEdit || !caseToEdit.assignedUsersUids?.includes(currentUser.uid))) {
+         alert("You can only edit cases to which you are assigned."); return;
+      }
+      window.location.href = `edit-case.html?id=${id}`;
+    };
+
+    function applyFilters() {
+      const clientText = filterClient.value.toLowerCase();
+      const statusText = filterStatus.value.toLowerCase(); 
+      const dueDateText = filterDueDate.value;
+      
+      // Filters are applied to allCasesMaster, which is already correctly populated for the user's role
+      const finalFiltered = allCasesMaster.filter(caseData => { 
+        const matchClient = caseData.client?.toLowerCase().includes(clientText) ?? true; 
+        const matchStatus = statusText ? (caseData.status?.toLowerCase() === statusText) : true;
+        const matchDueDate = dueDateText ? (formatDate(caseData.dueDateOfReply) === dueDateText) : true;
+        return matchClient && matchStatus && matchDueDate;
+      });
+      renderTable(finalFiltered); 
+    }
+
+    filterClient.addEventListener("input", applyFilters);
+    filterStatus.addEventListener("change", applyFilters);
+    filterDueDate.addEventListener("input", applyFilters);
+
+    async function loadCases() { 
+      tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Loading cases...</td></tr>';
+      if (!currentUser || !currentUser.role) { 
+          console.log("Dashboard: User or role not identified yet. Waiting for auth state change.");
+          return; 
+      }
+      
+      try {
+        let casesQuery; 
+        // For TeamLead and Viewer, fetch all cases. CaseLead data is handled by renderTable logic for actions.
+        // The actual data loaded into allCasesMaster will be all cases for these roles.
+        if (currentUser.role === 'teamLead' || currentUser.role === 'viewer' || currentUser.role === 'caseLead') {
+            console.log(`Dashboard: Fetching all cases for ${currentUser.role} to display on dashboard.`);
+            casesQuery = collection(db, "cases");
+        } else { 
+            console.error("Dashboard: Unknown user role:", currentUser.role);
+            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">User role not recognized. Cannot load cases.</td></tr>';
+            return;
+        }
+
+        const querySnapshot = await getDocs(casesQuery);
+        allCasesMaster = querySnapshot.docs.map(doc => ({ 
+            id: doc.id, 
+            ...doc.data(),
+            primaryLeadName: doc.data().primaryLeadName || doc.data().leadName || doc.data().lead 
+        }));
+        
+        applyFilters(); // This will call renderTable which now uses the global currentUser for action buttons
+
+      } catch (error) {
+        console.error("Error loading cases: ", error);
+        tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Failed to load data. Please check connection or console.</td></tr>';
+      }
+    }
+
+    function escapeCSVField(field) {
+        if (field === null || field === undefined) { return ''; }
+        const stringField = String(field);
+        if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n') || stringField.includes('\r')) {
+            return `"${stringField.replace(/"/g, '""')}"`;
+        }
+        return stringField;
+    }
+
+    async function exportTableToCSV(filename) { 
+        if (!currentUser || currentUser.role === 'viewer') {
+            alert("Viewers are not permitted to export data.");
+            return;
+        }
+        if (currentlyDisplayedCases.length === 0) {
+            alert("No data to export.");
+            return;
+        }
+        const csv = [];
+        const headers = [
+            "Case ID (Internal)", "Client", "State", "Primary Lead", "Co-Leads/Teammates", "Current Stage", "Next Step", "Primary Issue", "Status", "Due Date of Reply",
+            "Period", "ADT-01 Ref ID", "ADT-01 Date", "ADT-02 Ref ID", "ADT-02 Date", "ASMT-10", "ASMT-10 Date",
+            "DRC-01A Ref ID", "DRC-01A Date", "DRC-01 Ref ID", "DRC-01 Date", "Reminder Ref No.", "Reminder Date",
+            "Reply Filed Date", "Order Ref ID", "Order Date", "OIA Ref ID", "OIA Date", "Appeal Due Date",
+            "Appeal Filed Date", "APL-02 ARN", "APL-02 Status", "Status Date (Appeal)", "APL-02 Date", "Issues (Detailed)",
+            "IGST", "CGST", "SGST", "Interest", "Penalty", "Total Demand",
+            "Payment Ref No.", "Payment Date", "Payment Amount"
+        ];
+        csv.push(headers.map(escapeCSVField).join(','));
+
+        const teammateNamePromises = currentlyDisplayedCases.map(caseData => 
+            getTeammateNames(caseData.assignedUsersUids, caseData.primaryLeadUid || caseData.leadUid)
+        );
+        
+        try {
+            const teammateNamesArray = await Promise.all(teammateNamePromises);
+
+            currentlyDisplayedCases.forEach((caseData, i) => {
+                const row = [
+                    caseData.caseId || caseData.id, 
+                    caseData.client, caseData.state, caseData.primaryLeadName || caseData.leadName || caseData.lead, 
+                    teammateNamesArray[i], 
+                    caseData.currentStage, caseData.nextStep,
+                    caseData.issue, caseData.status, formatDate(caseData.dueDateOfReply), caseData.period,
+                    caseData.adt01ReferenceId, formatDate(caseData.dateOfAdt01), caseData.adt02ReferenceId, formatDate(caseData.dateOfAdt02),
+                    caseData.asmt10, formatDate(caseData.dateOfAsmt10), 
+                    caseData.drc01aReferenceId || caseData.drc01AReferenceId, formatDate(caseData.dateOfDrc01a || caseData.dateOfDrc01A), 
+                    caseData.drc01ReferenceId, formatDate(caseData.dateOfDrc01), caseData.reminderReferenceNo, formatDate(caseData.reminderReferenceDate),
+                    formatDate(caseData.dueReplyFiled), caseData.orderReferenceId, formatDate(caseData.dateOfOrder),
+                    caseData.oiaReferenceId, formatDate(caseData.dateOfOia), formatDate(caseData.appealDueDate),
+                    formatDate(caseData.appealFiledDate), caseData.apl02Arn, caseData.apl02Status, formatDate(caseData.statusDate || caseData.apl02StatusDate), 
+                    formatDate(caseData.apl02Date), caseData.issues, caseData.igst, caseData.cgst, caseData.sgst,
+                    caseData.interest, caseData.penalty, caseData.totalDemand, caseData.paymentReferenceNumber,
+                    formatDate(caseData.paymentDate), caseData.paymentAmount
+                ];
+                csv.push(row.map(field => escapeCSVField(field)).join(','));
+            });
+
+            const csvFile = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' }); 
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(csvFile);
+            downloadLink.setAttribute('download', filename || 'aeka_litigation_tracker.csv');
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(downloadLink.href);
+
+        } catch (error) {
+            console.error("Error preparing teammate names for CSV export:", error);
+            alert("Could not fully prepare CSV export with teammate names. Please try again or check console.");
+        }
+    }
+
+    if (exportCSVButton) {
+        exportCSVButton.addEventListener('click', function() {
+            exportTableToCSV('aeka_litigation_tracker_export.csv');
+        });
+    }
+    
+  </script>
+</body>
+</html>

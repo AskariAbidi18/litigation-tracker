@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upcoming Reminders – Aeka Litigation Tracker</title>
+  <style>
+    /* Common Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* Theme Variables: Red, Shades of Red, and White */
+    :root {
+      /* Base Palette for Red Theme */
+      --logo-primary-red: #8C1C1C;
+      --logo-primary-red-darker: #6E1616;
+      --logo-primary-red-darkest: #4B1212;
+      
+      --logo-red-tint-light: #F5E8E8;    
+      --logo-red-tint-medium: #D9C3C3;   
+      --logo-red-tint-table-header: #EADCDC; 
+      --logo-red-tint-row-hover: #F8F0F0;   
+
+      --logo-text-muted-red: #8C5555;
+      
+      --neutral-white: #FFFFFF;
+      --neutral-almost-white: #FCFBFB;
+      --neutral-light-gray: #f1f1f1; 
+
+      /* UI Specific Variables */
+      --page-bg: var(--neutral-almost-white);
+      --main-text-color: var(--logo-primary-red-darkest);
+      --heading-color: var(--logo-primary-red);
+      --muted-text-color: var(--logo-text-muted-red);
+      
+      --table-bg: var(--neutral-white);
+      --table-border-color: var(--logo-red-tint-medium);
+      --table-header-bg: var(--logo-red-tint-table-header);
+      --table-header-text-color: var(--logo-primary-red-darkest);
+      --table-row-even-bg: var(--neutral-almost-white); 
+      --table-row-hover-bg: var(--logo-red-tint-row-hover);
+      --table-cell-padding: 12px 15px;
+
+      --no-tasks-text-color: var(--logo-text-muted-red);
+      --no-tasks-bg-color: var(--logo-red-tint-light);
+
+      --button-bg: var(--logo-primary-red); /* For logout button */
+      --button-hover-bg: var(--logo-primary-red-darker);
+      --button-text-color: var(--neutral-white);
+      
+      /* Structural Variables */
+      --border-radius-sm: 4px; /* For buttons */
+      --border-radius-md: 8px;  /* For table container, message box */
+      --shadow-color: rgba(140, 28, 28, 0.08); 
+      --font-family: 'Inter', Arial, sans-serif;
+    }
+
+    /* Global Body Styles */
+    body {
+      font-family: var(--font-family);
+      background: var(--page-bg); 
+      color: var(--main-text-color);     
+      margin:0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
+
+    /* Watermark Styling */
+    body::after {
+        content: "";
+        background-image: url('images/aekalogo.webp'); 
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 300px auto; 
+        
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        width: 300px; 
+        height: 300px;
+
+        opacity: 0.025; 
+        z-index: -1000; 
+        pointer-events: none;
+    }
+    
+    /* Header Bar for User Info & Logout */
+    .header-bar {
+        background-color: var(--logo-red-tint-light);
+        padding: 10px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        position: sticky; 
+        top: 0;
+        z-index: 100; 
+    }
+    .header-bar .app-title-link {
+        text-decoration: none;
+        color: var(--heading-color);
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .header-bar .user-info-display {
+        font-size: 0.9rem;
+        color: var(--main-text-color);
+    }
+    .header-bar .user-info-display span {
+        font-weight: 600;
+    }
+    .header-bar #logout-button-header {
+        background-color: var(--button-bg);
+        color: var(--button-text-color);
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+    .header-bar #logout-button-header:hover {
+        background-color: var(--button-hover-bg);
+    }
+
+    /* Page Content Wrapper */
+    .page-content-wrapper {
+        max-width: 900px;
+        margin: 20px auto 30px auto; 
+        padding: 0 20px; 
+        position: relative; 
+        z-index: 1;
+        text-align: center; 
+    }
+    
+    /* Header Logo for content pages */
+    .content-header-logo {
+        width: 150px; 
+        max-width: 60%;
+        height: auto;
+        margin-bottom: 15px; 
+        margin-top: 10px; 
+    }
+
+
+    /* Heading Styling */
+    h2.page-title { 
+      text-align: center;
+      color: var(--heading-color); 
+      margin-top: 0; 
+      margin-bottom: 30px;
+      font-size: 2rem; 
+      font-weight: 700;
+    }
+
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: var(--table-bg); 
+      box-shadow: 0 4px 12px var(--shadow-color); 
+      border-radius: var(--border-radius-md); 
+      overflow: hidden; 
+      text-align: left; 
+    }
+
+    th, td {
+      padding: var(--table-cell-padding);
+      border-bottom: 1px solid var(--table-border-color); 
+      text-align: left;
+      font-size: 0.95rem; 
+    }
+    
+    td {
+        border-right: 1px solid var(--table-border-color);
+    }
+    td:last-child {
+        border-right: none;
+    }
+
+    th {
+      background-color: var(--table-header-bg); 
+      color: var(--table-header-text-color);             
+      font-weight: 700; 
+      position: sticky;
+      top: 0; 
+      z-index: 10; 
+    }
+     th:last-child {
+        border-right: none;
+    }
+
+
+    tr:nth-child(even) {
+      background-color: var(--table-row-even-bg); 
+    }
+    
+    tr:hover {
+      background-color: var(--table-row-hover-bg); 
+    }
+
+    /* "No Tasks" Message Styling */
+    .no-tasks {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 1.1em; 
+      color: var(--no-tasks-text-color); 
+      background-color: var(--no-tasks-bg-color);
+      padding: 25px;
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 2px 5px rgba(140, 28, 28, 0.05);
+      border: 1px dashed var(--logo-red-tint-medium);
+    }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <a href="task-overview.html" class="app-title-link">Aeka Litigation Tracker</a>
+    <div class="user-info-display">
+        Logged in as: <span id="user-email-role-display">Loading...</span>
+    </div>
+    <button id="logout-button-header">Logout</button>
+  </div>
+
+  <div class="page-content-wrapper">
+    <img src="images/WebsiteLogo_1-898735755-1659284008389.webp" alt="Aeka Litigation Tracker Logo" class="content-header-logo">
+    <h2 class="page-title">Upcoming Reminders (Next 30 Days)</h2>
+
+    <table id="reminders-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>Case ID</th>
+          <th>Client</th>
+          <th>Task Type</th>
+          <th>Due Date</th>
+        </tr>
+      </thead>
+      <tbody id="reminders-tbody">
+          </tbody>
+    </table>
+
+    <div id="no-tasks-msg" class="no-tasks">Loading reminders...</div>
+  </div>
+
+  <script type="module">
+    // Firebase App and Auth modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; 
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+
+    // Firebase configuration 
+    import { firebaseConfig } from './firebase_config.js'; 
+
+    // Initialize Firebase app
+    const app = initializeApp(firebaseConfig);
+    // Get Firebase Auth instance
+    const auth = getAuth(app); 
+    // Get Firestore instance
+    const db = getFirestore(app);
+
+    const remindersTable = document.getElementById('reminders-table');
+    const remindersTbody = document.getElementById('reminders-tbody');
+    const noTasksMsg = document.getElementById('no-tasks-msg');
+    const userEmailRoleDisplay = document.getElementById("user-email-role-display");
+    const logoutButtonHeader = document.getElementById("logout-button-header");
+    let currentUser = null; 
+
+    // Function to update UI based on user role 
+    function updateGlobalUI() {
+        if (currentUser && currentUser.role) {
+            const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
+        } else {
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Not logged in';
+        }
+    }
+
+    // Authentication state listener
+    onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+            console.log("Reminders: Firebase user detected:", firebaseUser.uid);
+            const storedUserJSON = localStorage.getItem('currentUser');
+            if (storedUserJSON) {
+                try {
+                    currentUser = JSON.parse(storedUserJSON);
+                    console.log("Reminders: currentUser from localStorage:", currentUser);
+                    if (currentUser.uid === firebaseUser.uid) {
+                        if (currentUser.role === 'viewer') {
+                            console.log("User is a Viewer. Redirecting to dashboard.html from Reminders.");
+                            window.location.href = 'dashboard.html';
+                            return; 
+                        }
+                        updateGlobalUI();
+                        loadUpcomingReminders(); 
+                    } else {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'index.html'; 
+                    }
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html'; 
+                }
+            } else {
+                console.warn("Reminders: User authenticated but no profile in localStorage. Redirecting to login.");
+                window.location.href = 'index.html'; 
+            }
+        } else {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Redirecting to login...';
+            console.log("Reminders: User is signed out. Redirecting to login.");
+            window.location.href = 'index.html'; 
+        }
+    });
+    
+    // Logout Button in Header
+    if(logoutButtonHeader) {
+        logoutButtonHeader.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Sign out error', error);
+                alert('Error signing out: ' + error.message);
+            });
+        });
+    }
+
+
+    // Define which date fields to check for upcoming tasks
+    const dateFieldsToCheck = [
+      { key: 'dueDateOfReply', label: 'Due Date of Reply' },
+      { key: 'dueReplyFiled', label: 'Reply Filed Date' }, 
+      { key: 'appealDueDate', label: 'Appeal Due Date' },
+      { key: 'reminderReferenceDate', label: 'Reminder Reference Date' },
+      { key: 'dateOfAdt01', label: 'ADT-01 Due' }, 
+      { key: 'dateOfOrder', label: 'Order Follow-up Due' } 
+    ];
+
+    // Helper function to format dates for display
+    function formatDateForDisplay(dateValue) {
+        if (!dateValue) return 'N/A';
+        try {
+            const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
+            if (isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch (e) {
+            return 'N/A';
+        }
+    }
+
+    function isDateUpcoming(dateStr) {
+      if (!dateStr) return false;
+      const now = new Date();
+      now.setHours(0,0,0,0); 
+
+      let targetDate;
+      if (dateStr && typeof dateStr.toDate === 'function') { 
+        targetDate = dateStr.toDate();
+      } else {
+        targetDate = new Date(dateStr);
+      }
+      targetDate.setHours(0,0,0,0); 
+
+      if (isNaN(targetDate.getTime())) return false; 
+
+      const diffTime = targetDate - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      return diffDays >= 0 && diffDays <= 30;  
+    }
+
+    async function loadUpcomingReminders() {
+      if (!currentUser || !currentUser.role) {
+          console.log("Reminders: Cannot load reminders, user or role not defined.");
+          noTasksMsg.textContent = "User information not available.";
+          noTasksMsg.style.display = "block";
+          remindersTable.style.display = "none";
+          return;
+      }
+      
+      noTasksMsg.textContent = "Loading reminders..."; 
+      noTasksMsg.style.display = "block";
+      remindersTable.style.display = "none";
+
+      try {
+        let casesQuery;
+        // CORRECTED DATA FETCHING LOGIC BASED ON ROLE
+        if (currentUser.role === 'caseLead' && currentUser.uid) {
+            console.log(`Reminders: Fetching cases for Case Lead: ${currentUser.uid}`);
+            casesQuery = query(collection(db, "cases"), where("leadUid", "==", currentUser.uid));
+        } else if (currentUser.role === 'teamLead') { 
+            // Team Lead sees all cases
+            console.log("Reminders: Fetching all cases for Team Lead.");
+            casesQuery = collection(db, "cases");
+        } else {
+            // Viewers are already redirected, so this path should ideally not be hit.
+            // If it is, it means an unauthorized role is trying to access data.
+            console.warn("Reminders: Unexpected role or no UID for data fetching:", currentUser.role);
+            noTasksMsg.textContent = "You do not have permission to view these reminders.";
+            noTasksMsg.style.display = "block";
+            remindersTable.style.display = "none";
+            return;
+        }
+
+        const querySnapshot = await getDocs(casesQuery);
+        let upcomingTasks = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          // Filter out closed cases for reminders
+          if (data.status && data.status.toLowerCase() === 'closed') {
+              return; // Skip closed cases
+          }
+          dateFieldsToCheck.forEach(field => {
+            if (data.hasOwnProperty(field.key) && isDateUpcoming(data[field.key])) {
+              upcomingTasks.push({
+                caseId: data.caseId || doc.id || 'N/A', 
+                client: data.client || 'N/A',
+                taskType: field.label,
+                dueDate: data[field.key]
+              });
+            }
+          });
+        });
+
+        if (upcomingTasks.length === 0) {
+          noTasksMsg.textContent = "No upcoming reminders in the next 30 days" + (currentUser.role === 'caseLead' ? " for your assigned cases." : ".");
+          remindersTable.style.display = "none";
+          noTasksMsg.style.display = "block";
+          return;
+        }
+
+        // Sort tasks by due date ascending
+        upcomingTasks.sort((a, b) => {
+            let dateA = a.dueDate.toDate ? a.dueDate.toDate() : new Date(a.dueDate);
+            let dateB = b.dueDate.toDate ? b.dueDate.toDate() : new Date(b.dueDate);
+            return dateA - dateB;
+        });
+        
+        remindersTbody.innerHTML = ''; 
+
+        upcomingTasks.forEach(task => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${task.caseId}</td>
+            <td>${task.client}</td>
+            <td>${task.taskType}</td>
+            <td>${formatDateForDisplay(task.dueDate)}</td>
+          `;
+          remindersTbody.appendChild(tr);
+        });
+
+        noTasksMsg.style.display = "none";
+        remindersTable.style.display = "table";
+
+      } catch (error) {
+        console.error("Error loading upcoming reminders:", error);
+        noTasksMsg.textContent = "Error loading reminders. Please check console for details.";
+        noTasksMsg.style.display = "block";
+        remindersTable.style.display = "none";
+      }
+    }
+    // loadUpcomingReminders() is called by onAuthStateChanged after user role is confirmed and not 'viewer'
+  </script>
+
+</body>
+</html>
