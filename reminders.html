@@ -38,7 +38,7 @@
       --table-header-text-color: var(--logo-primary-red-darkest);
       --table-row-even-bg: var(--neutral-almost-white); 
       --table-row-hover-bg: var(--logo-red-tint-row-hover);
-      --table-cell-padding: 12px 15px;
+      --table-cell-padding: 10px 12px; /* Adjusted padding for more columns */
 
       --no-tasks-text-color: var(--logo-text-muted-red);
       --no-tasks-bg-color: var(--logo-red-tint-light);
@@ -67,7 +67,7 @@
     /* Watermark Styling */
     body::after {
         content: "";
-        background-image: url('images/aekalogo.webp'); 
+        background-image: url('images/WebsiteLogo_1-898735755-1659284008389.webp'); 
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 300px auto; 
@@ -127,7 +127,7 @@
 
     /* Page Content Wrapper */
     .page-content-wrapper {
-        max-width: 900px;
+        max-width: 1300px; /* Increased width for more columns */
         margin: 20px auto 30px auto; 
         padding: 0 20px; 
         position: relative; 
@@ -156,6 +156,10 @@
     }
 
     /* Table Styling */
+    .scrollable-table { /* Added for horizontal scroll on smaller screens */
+        overflow-x: auto;
+        width: 100%;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -171,7 +175,21 @@
       padding: var(--table-cell-padding);
       border-bottom: 1px solid var(--table-border-color); 
       text-align: left;
-      font-size: 0.95rem; 
+      font-size: 0.88rem; /* Slightly smaller font for more columns */
+      white-space: nowrap; /* Prevent wrapping for most cells by default */
+    }
+    
+    /* Allow wrapping for issue column if it's long */
+    th.issue-column, td.issue-column {
+        white-space: normal;
+        min-width: 180px; /* Give issue column some space */
+        max-width: 250px; /* Prevent it from getting too wide */
+    }
+    th.client-column, td.client-column {
+        min-width: 120px;
+    }
+     th.lead-column, td.lead-column {
+        min-width: 120px;
     }
     
     td {
@@ -208,7 +226,7 @@
       text-align: center;
       font-size: 1.1em; 
       color: var(--no-tasks-text-color); 
-      background-color: var(--no-tasks-bg-color);
+      background-color: var(--logo-red-tint-light);
       padding: 25px;
       border-radius: var(--border-radius-md);
       box-shadow: 0 2px 5px rgba(140, 28, 28, 0.05);
@@ -228,37 +246,34 @@
   <div class="page-content-wrapper">
     <img src="images/WebsiteLogo_1-898735755-1659284008389.webp" alt="Aeka Litigation Tracker Logo" class="content-header-logo">
     <h2 class="page-title">Upcoming Reminders (Next 30 Days)</h2>
-
-    <table id="reminders-table" style="display:none;">
-      <thead>
-        <tr>
-          <th>Case ID</th>
-          <th>Client</th>
-          <th>Task Type</th>
-          <th>Due Date</th>
-        </tr>
-      </thead>
-      <tbody id="reminders-tbody">
-          </tbody>
-    </table>
-
+    <div class="scrollable-table">
+        <table id="reminders-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Case ID</th>
+              <th class="client-column">Client</th>
+              <th class="lead-column">Lead Name</th>
+              <th>Priority</th>
+              <th class="issue-column">Issue</th>
+              <th>Task Type</th>
+              <th>Due Date</th>
+            </tr>
+          </thead>
+          <tbody id="reminders-tbody">
+              </tbody>
+        </table>
+    </div>
     <div id="no-tasks-msg" class="no-tasks">Loading reminders...</div>
   </div>
 
   <script type="module">
-    // Firebase App and Auth modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; 
+    import { getFirestore, collection, getDocs, query, where, doc, getDoc as getFirestoreDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; // Added getDoc for profile fetching
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-
-    // Firebase configuration 
     import { firebaseConfig } from './firebase_config.js'; 
 
-    // Initialize Firebase app
     const app = initializeApp(firebaseConfig);
-    // Get Firebase Auth instance
     const auth = getAuth(app); 
-    // Get Firestore instance
     const db = getFirestore(app);
 
     const remindersTable = document.getElementById('reminders-table');
@@ -268,28 +283,25 @@
     const logoutButtonHeader = document.getElementById("logout-button-header");
     let currentUser = null; 
 
-    // Function to update UI based on user role 
     function updateGlobalUI() {
         if (currentUser && currentUser.role) {
             const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
-            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
+            // Use displayName if available, otherwise fallback to email
+            const userName = currentUser.displayName || currentUser.email;
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${userName} (${displayRole})`;
         } else {
             if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Not logged in';
         }
     }
 
-    // Authentication state listener
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-            console.log("Reminders: Firebase user detected:", firebaseUser.uid);
             const storedUserJSON = localStorage.getItem('currentUser');
             if (storedUserJSON) {
                 try {
                     currentUser = JSON.parse(storedUserJSON);
-                    console.log("Reminders: currentUser from localStorage:", currentUser);
                     if (currentUser.uid === firebaseUser.uid) {
                         if (currentUser.role === 'viewer') {
-                            console.log("User is a Viewer. Redirecting to dashboard.html from Reminders.");
                             window.location.href = 'dashboard.html';
                             return; 
                         }
@@ -304,19 +316,37 @@
                     window.location.href = 'index.html'; 
                 }
             } else {
-                console.warn("Reminders: User authenticated but no profile in localStorage. Redirecting to login.");
-                window.location.href = 'index.html'; 
+                 // Attempt to fetch profile if not in localStorage
+                const userProfileRef = doc(db, "userProfiles", firebaseUser.uid); // Ensure doc is imported from Firestore
+                getFirestoreDoc(userProfileRef).then(docSnap => { // Use getFirestoreDoc alias
+                    if (docSnap.exists()) {
+                        currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, ...docSnap.data() };
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                         if (currentUser.role === 'viewer') {
+                            window.location.href = 'dashboard.html';
+                            return; 
+                        }
+                        updateGlobalUI();
+                        loadUpcomingReminders();
+                    } else {
+                        console.warn("Reminders: User profile not found in Firestore. Redirecting to login.");
+                        localStorage.removeItem('currentUser'); 
+                        window.location.href = 'index.html';
+                    }
+                }).catch(error => {
+                    console.error("Reminders: Error fetching user profile on auth change:", error);
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                });
             }
         } else {
             localStorage.removeItem('currentUser');
             currentUser = null;
             if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = 'Redirecting to login...';
-            console.log("Reminders: User is signed out. Redirecting to login.");
             window.location.href = 'index.html'; 
         }
     });
     
-    // Logout Button in Header
     if(logoutButtonHeader) {
         logoutButtonHeader.addEventListener('click', () => {
             signOut(auth).then(() => {
@@ -330,8 +360,6 @@
         });
     }
 
-
-    // Define which date fields to check for upcoming tasks
     const dateFieldsToCheck = [
       { key: 'dueDateOfReply', label: 'Due Date of Reply' },
       { key: 'dueReplyFiled', label: 'Reply Filed Date' }, 
@@ -341,7 +369,6 @@
       { key: 'dateOfOrder', label: 'Order Follow-up Due' } 
     ];
 
-    // Helper function to format dates for display
     function formatDateForDisplay(dateValue) {
         if (!dateValue) return 'N/A';
         try {
@@ -375,7 +402,6 @@
 
     async function loadUpcomingReminders() {
       if (!currentUser || !currentUser.role) {
-          console.log("Reminders: Cannot load reminders, user or role not defined.");
           noTasksMsg.textContent = "User information not available.";
           noTasksMsg.style.display = "block";
           remindersTable.style.display = "none";
@@ -388,18 +414,11 @@
 
       try {
         let casesQuery;
-        // CORRECTED DATA FETCHING LOGIC BASED ON ROLE
         if (currentUser.role === 'caseLead' && currentUser.uid) {
-            console.log(`Reminders: Fetching cases for Case Lead: ${currentUser.uid}`);
-            casesQuery = query(collection(db, "cases"), where("leadUid", "==", currentUser.uid));
+            casesQuery = query(collection(db, "cases"), where("assignedUsersUids", "array-contains", currentUser.uid));
         } else if (currentUser.role === 'teamLead') { 
-            // Team Lead sees all cases
-            console.log("Reminders: Fetching all cases for Team Lead.");
             casesQuery = collection(db, "cases");
         } else {
-            // Viewers are already redirected, so this path should ideally not be hit.
-            // If it is, it means an unauthorized role is trying to access data.
-            console.warn("Reminders: Unexpected role or no UID for data fetching:", currentUser.role);
             noTasksMsg.textContent = "You do not have permission to view these reminders.";
             noTasksMsg.style.display = "block";
             remindersTable.style.display = "none";
@@ -411,15 +430,17 @@
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          // Filter out closed cases for reminders
           if (data.status && data.status.toLowerCase() === 'closed') {
-              return; // Skip closed cases
+              return; 
           }
           dateFieldsToCheck.forEach(field => {
             if (data.hasOwnProperty(field.key) && isDateUpcoming(data[field.key])) {
               upcomingTasks.push({
                 caseId: data.caseId || doc.id || 'N/A', 
                 client: data.client || 'N/A',
+                leadName: data.primaryLeadName || data.leadName || 'N/A', 
+                priority: data.priority || 'Medium', 
+                issue: data.issue || 'N/A', 
                 taskType: field.label,
                 dueDate: data[field.key]
               });
@@ -434,7 +455,6 @@
           return;
         }
 
-        // Sort tasks by due date ascending
         upcomingTasks.sort((a, b) => {
             let dateA = a.dueDate.toDate ? a.dueDate.toDate() : new Date(a.dueDate);
             let dateB = b.dueDate.toDate ? b.dueDate.toDate() : new Date(b.dueDate);
@@ -447,7 +467,10 @@
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${task.caseId}</td>
-            <td>${task.client}</td>
+            <td class="client-column">${task.client}</td>
+            <td class="lead-column">${task.leadName}</td>
+            <td>${task.priority}</td>
+            <td class="issue-column">${task.issue}</td>
             <td>${task.taskType}</td>
             <td>${formatDateForDisplay(task.dueDate)}</td>
           `;
@@ -464,7 +487,6 @@
         remindersTable.style.display = "none";
       }
     }
-    // loadUpcomingReminders() is called by onAuthStateChanged after user role is confirmed and not 'viewer'
   </script>
 
 </body>

@@ -70,43 +70,36 @@
       background: var(--page-bg);
       color: var(--main-text-color);
     }
-
-    /* Watermark Styling */
-    body::after {
-        content: "";
-        background-image: url('images/aekalogo.webp'); 
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: 300px auto; 
-        
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        
-        width: 300px; 
-        height: 300px;
-
-        opacity: 0.025; 
-        z-index: -1000; 
-        pointer-events: none;
-    }
     
     /* Header Bar for User Info & Logout */
     .header-bar {
         background-color: var(--logo-red-tint-light);
-        padding: 10px 25px;
+        padding: 10px 20px; 
         display: flex;
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 2px 4px var(--shadow-color);
         position: sticky;
         top: 0;
-        z-index: 100; /* Above watermark, below modal overlay */
+        z-index: 100; 
     }
+    .header-logo {
+        height: 40px; 
+        width: auto;
+        margin-right: 15px; 
+    }
+    .header-bar .app-title-link { 
+        text-decoration: none;
+        color: var(--heading-color);
+        font-weight: 700;
+        font-size: 1.3rem; 
+        margin-right: auto; 
+    }
+
     .header-bar .user-info-display {
         font-size: 0.9rem;
         color: var(--main-text-color);
+        margin-left: 15px; 
     }
     .header-bar .user-info-display span {
         font-weight: 600;
@@ -121,6 +114,7 @@
         font-weight: 600;
         font-size: 0.9rem;
         transition: background-color 0.3s ease;
+        margin-left: 15px; 
     }
     .header-bar #logout-button-header:hover {
         background-color: var(--button-hover-bg);
@@ -140,29 +134,34 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start; 
+      align-items: center; 
       margin: 20px auto; 
       padding: 15px;
-      gap: 20px;
+      gap: 15px; 
       background-color: var(--neutral-white); 
       border-radius: var(--border-radius-md);
       box-shadow: 0 2px 5px var(--shadow-color);
-      max-width: 1200px; 
-      position: relative; /* For stacking context */
+      max-width: 1300px; 
+      position: relative; 
       z-index: 1;
+    }
+    .filter-item { 
+        display: flex;
+        flex-direction: column; 
+        gap: 4px; 
     }
 
     .filters label {
-      margin-right: 8px;
-      font-size: 14px;
+      font-size: 13px; 
       color: var(--muted-text-color);
       font-weight: 600;
     }
 
     .filters input, .filters select {
-      padding: 9px 12px; 
+      padding: 8px 10px; 
       font-size: 14px;
       font-family: var(--font-family);
-      width: 230px; 
+      width: 200px; 
       border: 1px solid var(--input-border);
       border-radius: var(--border-radius-sm);
       background-color: var(--input-bg);
@@ -177,14 +176,13 @@
       outline: none;
       box-shadow: 0 0 0 3px var(--input-focus-shadow-color);
     }
-     /* Custom arrow for select */
     .filters select {
         appearance: none;
         background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234B1212%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat;
         background-position: right 0.7rem center;
         background-size: .65em auto;
-        padding-right: 2rem; /* Make space for arrow */
+        padding-right: 2rem; 
     }
 
 
@@ -194,7 +192,7 @@
       margin: 25px 20px; 
       border-radius: var(--border-radius-md); 
       box-shadow: 0 4px 12px var(--shadow-color); 
-      position: relative; /* For stacking context */
+      position: relative; 
       z-index: 1; 
     }
 
@@ -262,7 +260,7 @@
       gap: 15px; 
       margin: 20px 20px 25px 20px; 
       padding-left: 5px; 
-      position: relative; /* For stacking context */
+      position: relative; 
       z-index: 1;
     }
      .export-buttons button {
@@ -357,6 +355,8 @@
 </head>
 <body>
   <div class="header-bar">
+    <img src="images/WebsiteLogo_1-898735755-1659284008389.webp" alt="Aeka Litigation Tracker Logo" class="header-logo">
+    <a href="dashboard.html" class="app-title-link">Aeka Litigation Tracker</a> 
     <div class="user-info-display">
         Logged in as: <span id="user-email-role-display">Loading...</span>
     </div>
@@ -366,19 +366,27 @@
   <h1>Litigation Dashboard</h1>
 
   <div class="filters">
-    <label for="filter-client">Client:</label>
-    <input type="text" id="filter-client" placeholder="Enter client name" />
-    
-    <label for="filter-status">Status:</label>
-    <select id="filter-status">
-      <option value="">All</option>
-      <option value="Open">Open</option>
-      <option value="Pending">Pending</option>
-      <option value="Closed">Closed</option>
-    </select>
-
-    <label for="filter-due-date">Due Date of Reply:</label>
-    <input type="date" id="filter-due-date" />
+    <div class="filter-item">
+        <label for="filter-client">Client:</label>
+        <input type="text" id="filter-client" placeholder="Enter client name" />
+    </div>
+    <div class="filter-item">
+        <label for="filter-lead">Lead:</label>
+        <input type="text" id="filter-lead" placeholder="Enter lead name" />
+    </div>
+    <div class="filter-item">
+        <label for="filter-status">Status:</label>
+        <select id="filter-status">
+          <option value="">All</option>
+          <option value="Open">Open</option>
+          <option value="Pending">Pending</option>
+          <option value="Closed">Closed</option>
+        </select>
+    </div>
+    <div class="filter-item">
+        <label for="filter-due-date">Due Date of Reply:</label>
+        <input type="date" id="filter-due-date" />
+    </div>
   </div>
 
   <div class="export-buttons">
@@ -389,8 +397,16 @@
     <table id="cases-table">
       <thead>
         <tr>
-          <th>Client</th><th>State</th><th>Lead</th><th>Current Stage</th><th>Next Step</th><th>Issue</th><th>Status</th>
-          <th>Due Date of Reply</th><th>Actions</th>
+          <th>Client</th>
+          <th>State</th>
+          <th>Lead</th>
+          <th>Priority</th> 
+          <th>Current Stage</th>
+          <th>Next Step</th>
+          <th>Issue</th>
+          <th>Status</th>
+          <th>Due Date of Reply</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -418,6 +434,7 @@
 
     const tableBody = document.querySelector("#cases-table tbody");
     const filterClient = document.getElementById("filter-client");
+    const filterLead = document.getElementById("filter-lead"); 
     const filterStatus = document.getElementById("filter-status");
     const filterDueDate = document.getElementById("filter-due-date");
 
@@ -432,11 +449,27 @@
     let allCasesMaster = []; 
     let currentlyDisplayedCases = []; 
     let currentUser = null; 
+    let userProfilesMap = {}; // To store UID -> displayName mapping
+
+    // Function to fetch all user profiles
+    async function fetchUserProfiles() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "userProfiles"));
+            querySnapshot.forEach((doc) => {
+                userProfilesMap[doc.id] = doc.data().displayName || doc.data().email; // Fallback to email
+            });
+            console.log("User profiles fetched:", userProfilesMap);
+        } catch (error) {
+            console.error("Error fetching user profiles:", error);
+        }
+    }
+
 
     function updateGlobalUIBasedOnRole() {
         if (currentUser && currentUser.role) {
             const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
-            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
+            const userName = currentUser.displayName || currentUser.email;
+            if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${userName} (${displayRole})`;
             
             if (currentUser.role === 'viewer') {
                 if(exportCSVButton) exportCSVButton.classList.add('hidden');
@@ -449,8 +482,9 @@
         }
     }
     
-    onAuthStateChanged(auth, (firebaseUser) => {
+    onAuthStateChanged(auth, async (firebaseUser) => { // Made async
         if (firebaseUser) {
+            await fetchUserProfiles(); // Fetch profiles after auth state is known
             const storedUserJSON = localStorage.getItem('currentUser');
             if (storedUserJSON) {
                 try {
@@ -473,7 +507,7 @@
                         currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, ...docSnap.data() };
                         localStorage.setItem('currentUser', JSON.stringify(currentUser));
                         updateGlobalUIBasedOnRole();
-                        loadCases();
+                        loadCases(); // Load cases after setting current user
                     } else {
                         console.warn("Dashboard: User profile not found in Firestore. Redirecting to login.");
                         localStorage.removeItem('currentUser'); 
@@ -522,11 +556,10 @@
 
       if (dataToRender.length === 0) {
         let message = "No cases found.";
-        if (filterClient.value || filterStatus.value || filterDueDate.value) {
+        if (filterClient.value || filterLead.value || filterStatus.value || filterDueDate.value) {
             message = "No cases match the current filters.";
         }
-        // Removed the specific 'caseLead' message here as they now see all cases by default
-        tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">${message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 20px; color: var(--muted-text-color);">${message}</td></tr>`;
         return;
       }
 
@@ -539,20 +572,26 @@
         if (userRole === 'teamLead') {
             canEditDelete = true;
         } else if (userRole === 'caseLead' && caseData.assignedUsersUids && caseData.assignedUsersUids.includes(currentUser.uid)) { 
-            // Case Lead can edit/delete ONLY if they are in the assignedUsersUids array for THIS case
             canEditDelete = true;
         }
-        // Viewers (userRole === 'viewer') will have canEditDelete as false by default
 
         if (canEditDelete) {
             actionButtonsHtml += ` <button onclick="editCase('${caseData.id}')" title="Edit Case">Edit</button>`;
             actionButtonsHtml += ` <button onclick="deleteCase('${caseData.id}')" title="Delete Case">Delete</button>`;
         }
 
+        // Determine lead display name
+        let leadDisplayName = caseData.primaryLeadName || caseData.leadName || caseData.lead || '';
+        if (caseData.leadUid && userProfilesMap[caseData.leadUid]) {
+            leadDisplayName = userProfilesMap[caseData.leadUid];
+        }
+
+
         row.innerHTML = `
           <td>${caseData.client || ''}</td>
           <td>${caseData.state || ''}</td>
-          <td>${caseData.primaryLeadName || caseData.leadName || caseData.lead || ''}</td> 
+          <td>${leadDisplayName}</td> 
+          <td>${caseData.priority || 'Medium'}</td> 
           <td>${caseData.currentStage || ''}</td>
           <td>${caseData.nextStep || ''}</td>
           <td>${caseData.issue || ''}</td>
@@ -582,13 +621,21 @@
 
         for (const uid of coLeadUidsToFetch) {
             try {
-                const userDocRef = doc(db, "userProfiles", uid);
-                const userDocSnap = await getFirestoreDoc(userDocRef); 
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    teammateNames.push(userData.displayName || userData.email);
+                // Use the pre-fetched userProfilesMap for efficiency
+                if (userProfilesMap[uid]) {
+                    teammateNames.push(userProfilesMap[uid]);
                 } else {
-                    teammateNames.push(`UID: ${uid.substring(0,7)}... (Profile not found)`);
+                    // Fallback if somehow not in map (should be rare if fetchUserProfiles is complete)
+                    const userDocRef = doc(db, "userProfiles", uid);
+                    const userDocSnap = await getFirestoreDoc(userDocRef); 
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        const name = userData.displayName || userData.email;
+                        userProfilesMap[uid] = name; // Cache it for future use
+                        teammateNames.push(name);
+                    } else {
+                        teammateNames.push(`UID: ${uid.substring(0,7)}... (Profile not found)`);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching teammate profile for UID:", uid, error);
@@ -611,12 +658,18 @@
       const caseData = currentlyDisplayedCases[index]; 
       modalContent.innerHTML = '<p style="text-align:center; color:var(--muted-text-color);">Loading details...</p>'; 
       
+      let leadDisplayNameInModal = caseData.primaryLeadName || caseData.leadName || caseData.lead || '';
+      if (caseData.leadUid && userProfilesMap[caseData.leadUid]) {
+          leadDisplayNameInModal = userProfilesMap[caseData.leadUid];
+      }
+
       let clientDetailsHtml = '';
       clientDetailsHtml += createModalParagraph("State", caseData.state);
-      clientDetailsHtml += createModalParagraph("Primary Lead", caseData.primaryLeadName || caseData.leadName || caseData.lead); 
+      clientDetailsHtml += createModalParagraph("Primary Lead", leadDisplayNameInModal); 
       
-      const teammateNames = await getTeammateNames(caseData.assignedUsersUids, caseData.primaryLeadUid || caseData.leadUid);
+      const teammateNames = await getTeammateNames(caseData.assignedUsersUids, caseData.leadUid); // Pass leadUid
       clientDetailsHtml += createModalParagraph("Co-Leads/Teammates", teammateNames);
+      clientDetailsHtml += createModalParagraph("Priority", caseData.priority || 'Medium'); 
 
       clientDetailsHtml += createModalParagraph("Current Stage", caseData.currentStage);
       clientDetailsHtml += createModalParagraph("Next Step", caseData.nextStep);
@@ -625,6 +678,7 @@
       clientDetailsHtml += createModalParagraph("Period", caseData.period);
       clientDetailsHtml += createModalParagraph("Case ID (Internal)", caseData.caseId || caseData.id);
 
+      // ... (rest of modal sections remain the same)
       let adtDetailsHtml = '';
       adtDetailsHtml += createModalParagraph("ADT-01 Reference ID", caseData.adt01ReferenceId);
       adtDetailsHtml += createModalParagraph("Date of ADT-01", caseData.dateOfAdt01, true);
@@ -742,25 +796,33 @@
 
     function applyFilters() {
       const clientText = filterClient.value.toLowerCase();
+      const leadText = filterLead.value.toLowerCase(); 
       const statusText = filterStatus.value.toLowerCase(); 
       const dueDateText = filterDueDate.value;
       
-      // Filters are applied to allCasesMaster, which is already correctly populated for the user's role
       const finalFiltered = allCasesMaster.filter(caseData => { 
         const matchClient = caseData.client?.toLowerCase().includes(clientText) ?? true; 
+        
+        let leadDisplayNameForFilter = caseData.primaryLeadName || caseData.leadName || caseData.lead || '';
+        if (caseData.leadUid && userProfilesMap[caseData.leadUid]) {
+            leadDisplayNameForFilter = userProfilesMap[caseData.leadUid];
+        }
+        const matchLead = leadDisplayNameForFilter.toLowerCase().includes(leadText) ?? true;
+
         const matchStatus = statusText ? (caseData.status?.toLowerCase() === statusText) : true;
         const matchDueDate = dueDateText ? (formatDate(caseData.dueDateOfReply) === dueDateText) : true;
-        return matchClient && matchStatus && matchDueDate;
+        return matchClient && matchLead && matchStatus && matchDueDate; 
       });
       renderTable(finalFiltered); 
     }
 
     filterClient.addEventListener("input", applyFilters);
+    filterLead.addEventListener("input", applyFilters); 
     filterStatus.addEventListener("change", applyFilters);
     filterDueDate.addEventListener("input", applyFilters);
 
     async function loadCases() { 
-      tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Loading cases...</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Loading cases...</td></tr>'; 
       if (!currentUser || !currentUser.role) { 
           console.log("Dashboard: User or role not identified yet. Waiting for auth state change.");
           return; 
@@ -768,14 +830,11 @@
       
       try {
         let casesQuery; 
-        // For TeamLead and Viewer, fetch all cases. CaseLead data is handled by renderTable logic for actions.
-        // The actual data loaded into allCasesMaster will be all cases for these roles.
         if (currentUser.role === 'teamLead' || currentUser.role === 'viewer' || currentUser.role === 'caseLead') {
-            console.log(`Dashboard: Fetching all cases for ${currentUser.role} to display on dashboard.`);
             casesQuery = collection(db, "cases");
         } else { 
             console.error("Dashboard: Unknown user role:", currentUser.role);
-            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">User role not recognized. Cannot load cases.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 20px; color: var(--muted-text-color);">User role not recognized. Cannot load cases.</td></tr>'; 
             return;
         }
 
@@ -783,14 +842,16 @@
         allCasesMaster = querySnapshot.docs.map(doc => ({ 
             id: doc.id, 
             ...doc.data(),
+            // Ensure leadUid is available for lookup, even if primaryLeadName is already set
+            leadUid: doc.data().leadUid || null, 
             primaryLeadName: doc.data().primaryLeadName || doc.data().leadName || doc.data().lead 
         }));
         
-        applyFilters(); // This will call renderTable which now uses the global currentUser for action buttons
+        applyFilters(); // This will call renderTable which now uses userProfilesMap
 
       } catch (error) {
         console.error("Error loading cases: ", error);
-        tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Failed to load data. Please check connection or console.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 20px; color: var(--muted-text-color);">Failed to load data. Please check connection or console.</td></tr>'; 
       }
     }
 
@@ -814,7 +875,8 @@
         }
         const csv = [];
         const headers = [
-            "Case ID (Internal)", "Client", "State", "Primary Lead", "Co-Leads/Teammates", "Current Stage", "Next Step", "Primary Issue", "Status", "Due Date of Reply",
+            "Case ID (Internal)", "Client", "State", "Primary Lead", "Co-Leads/Teammates", "Priority", 
+            "Current Stage", "Next Step", "Primary Issue", "Status", "Due Date of Reply",
             "Period", "ADT-01 Ref ID", "ADT-01 Date", "ADT-02 Ref ID", "ADT-02 Date", "ASMT-10", "ASMT-10 Date",
             "DRC-01A Ref ID", "DRC-01A Date", "DRC-01 Ref ID", "DRC-01 Date", "Reminder Ref No.", "Reminder Date",
             "Reply Filed Date", "Order Ref ID", "Order Date", "OIA Ref ID", "OIA Date", "Appeal Due Date",
@@ -824,47 +886,51 @@
         ];
         csv.push(headers.map(escapeCSVField).join(','));
 
-        const teammateNamePromises = currentlyDisplayedCases.map(caseData => 
-            getTeammateNames(caseData.assignedUsersUids, caseData.primaryLeadUid || caseData.leadUid)
-        );
-        
-        try {
-            const teammateNamesArray = await Promise.all(teammateNamePromises);
-
-            currentlyDisplayedCases.forEach((caseData, i) => {
-                const row = [
-                    caseData.caseId || caseData.id, 
-                    caseData.client, caseData.state, caseData.primaryLeadName || caseData.leadName || caseData.lead, 
-                    teammateNamesArray[i], 
-                    caseData.currentStage, caseData.nextStep,
-                    caseData.issue, caseData.status, formatDate(caseData.dueDateOfReply), caseData.period,
-                    caseData.adt01ReferenceId, formatDate(caseData.dateOfAdt01), caseData.adt02ReferenceId, formatDate(caseData.dateOfAdt02),
-                    caseData.asmt10, formatDate(caseData.dateOfAsmt10), 
-                    caseData.drc01aReferenceId || caseData.drc01AReferenceId, formatDate(caseData.dateOfDrc01a || caseData.dateOfDrc01A), 
-                    caseData.drc01ReferenceId, formatDate(caseData.dateOfDrc01), caseData.reminderReferenceNo, formatDate(caseData.reminderReferenceDate),
-                    formatDate(caseData.dueReplyFiled), caseData.orderReferenceId, formatDate(caseData.dateOfOrder),
-                    caseData.oiaReferenceId, formatDate(caseData.dateOfOia), formatDate(caseData.appealDueDate),
-                    formatDate(caseData.appealFiledDate), caseData.apl02Arn, caseData.apl02Status, formatDate(caseData.statusDate || caseData.apl02StatusDate), 
-                    formatDate(caseData.apl02Date), caseData.issues, caseData.igst, caseData.cgst, caseData.sgst,
-                    caseData.interest, caseData.penalty, caseData.totalDemand, caseData.paymentReferenceNumber,
-                    formatDate(caseData.paymentDate), caseData.paymentAmount
-                ];
-                csv.push(row.map(field => escapeCSVField(field)).join(','));
+        // For CSV, we also want to use the resolved display names
+        const caseDataForCSV = [];
+        for (const caseData of currentlyDisplayedCases) {
+            const teammateNames = await getTeammateNames(caseData.assignedUsersUids, caseData.leadUid);
+            let leadDisplayNameForCSV = caseData.primaryLeadName || caseData.leadName || caseData.lead || '';
+            if (caseData.leadUid && userProfilesMap[caseData.leadUid]) {
+                leadDisplayNameForCSV = userProfilesMap[caseData.leadUid];
+            }
+            caseDataForCSV.push({
+                ...caseData,
+                resolvedLeadName: leadDisplayNameForCSV,
+                resolvedTeammateNames: teammateNames
             });
-
-            const csvFile = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' }); 
-            const downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(csvFile);
-            downloadLink.setAttribute('download', filename || 'aeka_litigation_tracker.csv');
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(downloadLink.href);
-
-        } catch (error) {
-            console.error("Error preparing teammate names for CSV export:", error);
-            alert("Could not fully prepare CSV export with teammate names. Please try again or check console.");
         }
+        
+        caseDataForCSV.forEach((caseData) => {
+            const row = [
+                caseData.caseId || caseData.id, 
+                caseData.client, caseData.state, caseData.resolvedLeadName, 
+                caseData.resolvedTeammateNames, 
+                caseData.priority || 'Medium', 
+                caseData.currentStage, caseData.nextStep,
+                caseData.issue, caseData.status, formatDate(caseData.dueDateOfReply), caseData.period,
+                caseData.adt01ReferenceId, formatDate(caseData.dateOfAdt01), caseData.adt02ReferenceId, formatDate(caseData.dateOfAdt02),
+                caseData.asmt10, formatDate(caseData.dateOfAsmt10), 
+                caseData.drc01aReferenceId || caseData.drc01AReferenceId, formatDate(caseData.dateOfDrc01a || caseData.dateOfDrc01A), 
+                caseData.drc01ReferenceId, formatDate(caseData.dateOfDrc01), caseData.reminderReferenceNo, formatDate(caseData.reminderReferenceDate),
+                formatDate(caseData.dueReplyFiled), caseData.orderReferenceId, formatDate(caseData.dateOfOrder),
+                caseData.oiaReferenceId, formatDate(caseData.dateOfOia), formatDate(caseData.appealDueDate),
+                formatDate(caseData.appealFiledDate), caseData.apl02Arn, caseData.apl02Status, formatDate(caseData.statusDate || caseData.apl02StatusDate), 
+                formatDate(caseData.apl02Date), caseData.issues, caseData.igst, caseData.cgst, caseData.sgst,
+                caseData.interest, caseData.penalty, caseData.totalDemand, caseData.paymentReferenceNumber,
+                formatDate(caseData.paymentDate), caseData.paymentAmount
+            ];
+            csv.push(row.map(field => escapeCSVField(field)).join(','));
+        });
+
+        const csvFile = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' }); 
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(csvFile);
+        downloadLink.setAttribute('download', filename || 'aeka_litigation_tracker.csv');
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(downloadLink.href);
     }
 
     if (exportCSVButton) {

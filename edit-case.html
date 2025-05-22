@@ -28,8 +28,6 @@
       --main-text-color: var(--logo-primary-red-darkest);
       --heading-color: var(--logo-primary-red);
       --label-color: var(--logo-primary-red-darker);
-      --legend-color: var(--logo-primary-red);
-      --fieldset-border-color: var(--logo-red-tint-medium);
       
       --input-bg: var(--neutral-white);
       --input-text-color: var(--logo-primary-red-darkest);
@@ -48,6 +46,13 @@
       --border-radius-sm: 6px;  
       --shadow-color: rgba(140, 28, 28, 0.1); 
       --font-family: 'Inter', Arial, sans-serif;
+
+      /* Accordion Specific Variables */
+      --accordion-header-bg: var(--logo-red-tint-light);
+      --accordion-header-hover-bg: #EADCDC; 
+      --accordion-header-text-color: var(--logo-primary-red-darker);
+      --accordion-content-border-color: var(--logo-red-tint-medium);
+      --accordion-icon-color: var(--logo-primary-red-darker);
     }
 
     /* Global Body Styles */
@@ -64,19 +69,17 @@
     /* Watermark Styling */
     body::after {
         content: "";
-        background-image: url('images/aekalogo.webp'); 
+        /* Updated image path */
+        background-image: url('images/WebsiteLogo_1-898735755-1659284008389.webp'); 
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 250px auto; 
-        
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        
         width: 250px; 
         height: 250px;
-
         opacity: 0.03; 
         z-index: -1000; 
         pointer-events: none;
@@ -86,7 +89,7 @@
      .header-bar {
         background-color: var(--logo-red-tint-light);
         padding: 10px 25px;
-        margin: -25px -20px 20px -20px; /* Span full width */
+        margin: -25px -20px 20px -20px; 
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -123,7 +126,6 @@
         background-color: var(--button-hover-bg);
     }
 
-
     /* Main Heading */
     h1 {
       text-align: center;
@@ -146,19 +148,53 @@
       z-index: 1; 
     }
 
-    /* Fieldset and Legend Styling */
-    fieldset {
-      border: 1.5px dashed var(--fieldset-border-color); 
-      padding: 20px 25px; 
-      margin-top: 25px; 
-      border-radius: var(--border-radius-md);
+    /* Accordion Styling */
+    .accordion-section {
+        margin-bottom: 15px;
+        border: 1px solid var(--accordion-content-border-color);
+        border-radius: var(--border-radius-md);
+        overflow: hidden; 
     }
-    legend {
-      font-weight: 700; 
-      font-size: 1.1rem; 
-      color: var(--legend-color);
-      padding: 0 10px;
-      margin-left: 5px; 
+    .accordion-header {
+        background-color: var(--accordion-header-bg);
+        color: var(--accordion-header-text-color);
+        cursor: pointer;
+        padding: 15px 20px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        font-size: 1.1rem;
+        font-weight: 700;
+        font-family: var(--font-family);
+        transition: background-color 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .accordion-header:hover {
+        background-color: var(--accordion-header-hover-bg);
+    }
+    .accordion-header.active {
+      border-bottom: 1px solid var(--accordion-content-border-color);
+    }
+    .accordion-icon {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: var(--accordion-icon-color);
+        transition: transform 0.3s ease;
+    }
+    .accordion-header.active .accordion-icon {
+        transform: rotate(45deg); 
+    }
+    .accordion-content {
+        padding: 0 25px 20px 25px; 
+        background-color: var(--neutral-white);
+        display: none; 
+        overflow: hidden;
+    }
+    .accordion-content.active {
+        display: block;
     }
 
     /* Label Styling */
@@ -175,7 +211,6 @@
         font-weight: bold;
         margin-left: 2px;
     }
-
 
     /* Input and Select Styling */
     input[type="text"],
@@ -199,10 +234,9 @@
         opacity: 0.8;
     }
     select[multiple] {
-        height: 120px; /* Adjust height for multi-select */
+        height: 120px; 
         padding: 10px;
     }
-
 
     input[type="text"]:focus,
     input[type="date"]:focus,
@@ -214,7 +248,6 @@
       box-shadow: 0 0 0 3px var(--input-focus-shadow-color);
     }
 
-    /* Select Specific Styling for dropdown arrow */
     select:not([multiple]) {
         appearance: none; 
         background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234B1212%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
@@ -223,7 +256,6 @@
         background-size: 0.8em auto;
         padding-right: 2.5rem; 
     }
-
 
     /* Submit Button Styling */
     button[type="submit"] {
@@ -249,18 +281,10 @@
 
     /* Responsive Adjustments */
     @media (max-width: 768px) {
-        h1 {
-            font-size: 1.9rem;
-        }
-        form {
-            padding: 20px 25px;
-        }
-        fieldset {
-            padding: 15px;
-        }
-        legend {
-            font-size: 1rem;
-        }
+        h1 { font-size: 1.9rem; }
+        form { padding: 20px 25px; }
+        .accordion-header { font-size: 1rem; padding: 12px 15px; }
+        .accordion-content { padding: 0 15px 15px 15px; }
     }
      @media (max-width: 600px) {
         body { padding: 15px; }
@@ -272,10 +296,7 @@
         h1 { font-size: 1.7rem; margin-bottom: 20px;}
         form { padding: 20px 20px; }
         label { font-size: 0.85rem; margin-top: 15px; }
-        input[type="text"],
-        input[type="date"],
-        input[type="number"],
-        select {
+        input[type="text"], input[type="date"], input[type="number"], select {
             padding: 10px 12px;
             font-size: 0.9rem;
         }
@@ -285,8 +306,6 @@
             margin-top: 30px;
         }
      }
-
-
   </style>
 </head>
 <body>
@@ -300,115 +319,143 @@
 
   <h1>Edit Case</h1>
   <form id="editForm">
-    <fieldset>
-      <legend>Client & Case Details</legend>
-      <label for="client">Client:</label> <input type="text" id="client" placeholder="Client Name" />
-      <label for="state">State:</label> <input type="text" id="state" placeholder="State"/>
-      
-      <label for="primaryLeadNameDisplay">Primary Lead:</label> 
-      <input type="text" id="primaryLeadNameDisplay" readonly /> <label for="assignedTeammates">Assigned Teammates (Co-Leads):</label>
-      <select id="assignedTeammates" multiple>
+    <div class="accordion-section">
+      <button type="button" class="accordion-header active">Client & Case Details <span class="accordion-icon">−</span></button>
+      <div class="accordion-content active" style="display: block;">
+        <label for="client">Client:</label> <input type="text" id="client" placeholder="Client Name" />
+        <label for="state">State:</label> <input type="text" id="state" placeholder="State"/>
+        
+        <label for="primaryLeadNameDisplay">Primary Lead:</label> 
+        <input type="text" id="primaryLeadNameDisplay" readonly /> 
+        <label for="assignedTeammates">Assigned Teammates (Co-Leads):</label>
+        <select id="assignedTeammates" multiple></select>
+        <small style="display: block; margin-top: 4px; color: var(--muted-text-color);">Hold Ctrl (or Cmd on Mac) to select multiple teammates.</small>
+
+        <label for="currentStage">Current Stage:</label> <input type="text" id="currentStage" placeholder="e.g., Notice Received"/>
+        <label for="nextStep">Next Step:</label> <input type="text" id="nextStep" placeholder="e.g., Prepare Reply"/>
+        <label for="issue">Issue (Primary):</label> <input type="text" id="issue" placeholder="Main issue of the case"/>
+        
+        <label for="status">Status:</label>
+        <select id="status">
+          <option value="">Select Status</option>
+          <option value="Open">Open</option>
+          <option value="Pending">Pending</option>
+          <option value="Closed">Closed</option>
         </select>
-      <small style="display: block; margin-top: 4px; color: var(--muted-text-color);">Hold Ctrl (or Cmd on Mac) to select multiple teammates.</small>
 
+        <label for="priority">Priority:</label>
+        <select id="priority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
 
-      <label for="currentStage">Current Stage:</label> <input type="text" id="currentStage" placeholder="e.g., Notice Received"/>
-      <label for="nextStep">Next Step:</label> <input type="text" id="nextStep" placeholder="e.g., Prepare Reply"/>
-      <label for="issue">Issue (Primary):</label> <input type="text" id="issue" placeholder="Main issue of the case"/>
-      <label for="status">Status:</label>
-      <select id="status">
-        <option value="">Select Status</option>
-        <option value="Open">Open</option>
-        <option value="Pending">Pending</option>
-        <option value="Closed">Closed</option>
-      </select>
-      <label for="period">Period:</label> <input type="text" id="period" placeholder="e.g., FY 2023-24"/>
-      <label for="caseId">Case ID (Internal):</label> <input type="text" id="caseId" placeholder="Your internal case ID"/>
-    </fieldset>
+        <label for="period">Period:</label> <input type="text" id="period" placeholder="e.g., FY 2023-24"/>
+        <label for="caseId">Case ID (Internal):</label> <input type="text" id="caseId" placeholder="Your internal case ID"/>
+      </div>
+    </div>
 
-    <fieldset>
-      <legend>ADT Details</legend>
-      <label for="adt01ReferenceId">ADT-01 Ref ID:</label> <input type="text" id="adt01ReferenceId" />
-      <label for="dateOfAdt01">ADT-01 Date:</label> <input type="date" id="dateOfAdt01" />
-      <label for="adt02ReferenceId">ADT-02 Ref ID:</label> <input type="text" id="adt02ReferenceId" />
-      <label for="dateOfAdt02">ADT-02 Date:</label> <input type="date" id="dateOfAdt02" />
-    </fieldset>
+    <div class="accordion-section">
+      <button type="button" class="accordion-header">ADT Details <span class="accordion-icon">+</span></button>
+      <div class="accordion-content">
+        <label for="adt01ReferenceId">ADT-01 Ref ID:</label> <input type="text" id="adt01ReferenceId" />
+        <label for="dateOfAdt01">ADT-01 Date:</label> <input type="date" id="dateOfAdt01" />
+        <label for="adt02ReferenceId">ADT-02 Ref ID:</label> <input type="text" id="adt02ReferenceId" />
+        <label for="dateOfAdt02">ADT-02 Date:</label> <input type="date" id="dateOfAdt02" />
+      </div>
+    </div>
 
-    <fieldset>
-      <legend>ASMT Details</legend>
-      <label for="asmt10">ASMT 10:</label> <input type="text" id="asmt10" />
-      <label for="dateOfAsmt10">ASMT 10 Date:</label> <input type="date" id="dateOfAsmt10" />
-    </fieldset>
+    <div class="accordion-section">
+      <button type="button" class="accordion-header">ASMT Details <span class="accordion-icon">+</span></button>
+      <div class="accordion-content">
+        <label for="asmt10">ASMT 10:</label> <input type="text" id="asmt10" />
+        <label for="dateOfAsmt10">ASMT 10 Date:</label> <input type="date" id="dateOfAsmt10" />
+      </div>
+    </div>
+    
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">DRC Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="drc01AReferenceId">DRC-01A Ref ID:</label> <input type="text" id="drc01AReferenceId" />
+            <label for="dateOfDrc01A">DRC-01A Date:</label> <input type="date" id="dateOfDrc01A" />
+            <label for="drc01ReferenceId">DRC-01 Ref ID:</label> <input type="text" id="drc01ReferenceId" />
+            <label for="dateOfDrc01">DRC-01 Date:</label> <input type="date" id="dateOfDrc01" />
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>DRC Details</legend>
-      <label for="drc01AReferenceId">DRC-01A Ref ID:</label> <input type="text" id="drc01AReferenceId" />
-      <label for="dateOfDrc01A">DRC-01A Date:</label> <input type="date" id="dateOfDrc01A" />
-      <label for="drc01ReferenceId">DRC-01 Ref ID:</label> <input type="text" id="drc01ReferenceId" />
-      <label for="dateOfDrc01">DRC-01 Date:</label> <input type="date" id="dateOfDrc01" />
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Reminder Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="reminderReferenceNo">Reminder Ref No.:</label> <input type="text" id="reminderReferenceNo" />
+            <label for="reminderReferenceDate">Reminder Date:</label> <input type="date" id="reminderReferenceDate" />
+        </div>
+    </div>
+    
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Reply Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="dueDateOfReply">Due Date of Reply:</label> <input type="date" id="dueDateOfReply" />
+            <label for="dueReplyFiled">Reply Filed Date:</label> <input type="date" id="dueReplyFiled" /> 
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>Reminder Details</legend>
-      <label for="reminderReferenceNo">Reminder Ref No.:</label> <input type="text" id="reminderReferenceNo" />
-      <label for="reminderReferenceDate">Reminder Date:</label> <input type="date" id="reminderReferenceDate" />
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Order Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="orderReferenceId">Order Ref ID:</label> <input type="text" id="orderReferenceId" />
+            <label for="dateOfOrder">Order Date:</label> <input type="date" id="dateOfOrder" />
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>Reply Details</legend>
-      <label for="dueDateOfReply">Due Date of Reply:</label> <input type="date" id="dueDateOfReply" />
-      <label for="dueReplyFiled">Reply Filed Date:</label> <input type="date" id="dueReplyFiled" /> 
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">OIA Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="oiaReferenceId">OIA Ref ID:</label> <input type="text" id="oiaReferenceId" />
+            <label for="dateOfOia">OIA Date:</label> <input type="date" id="dateOfOia" />
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>Order Details</legend>
-      <label for="orderReferenceId">Order Ref ID:</label> <input type="text" id="orderReferenceId" />
-      <label for="dateOfOrder">Order Date:</label> <input type="date" id="dateOfOrder" />
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Appeal Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="appealDueDate">Appeal Due Date:</label> <input type="date" id="appealDueDate" />
+            <label for="appealFiledDate">Appeal Filed Date:</label> <input type="date" id="appealFiledDate" />
+            <label for="apl02Arn">APL-02 ARN:</label> <input type="text" id="apl02Arn" />
+            <label for="apl02Status">APL-02 Status:</label> <input type="text" id="apl02Status" />
+            <label for="statusDate">Status Date (Appeal):</label> <input type="date" id="statusDate" /> 
+            <label for="apl02Date">APL-02 Date:</label> <input type="date" id="apl02Date" />
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>OIA Details</legend>
-      <label for="oiaReferenceId">OIA Ref ID:</label> <input type="text" id="oiaReferenceId" />
-      <label for="dateOfOia">OIA Date:</label> <input type="date" id="dateOfOia" />
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Financial Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="issues">Issues (Detailed):</label> <input type="text" id="issues" placeholder="Detailed issues"/>
+            <label for="igst">IGST:</label> <input type="number" id="igst" step="0.01" placeholder="0.00"/>
+            <label for="cgst">CGST:</label> <input type="number" id="cgst" step="0.01" placeholder="0.00"/>
+            <label for="sgst">SGST:</label> <input type="number" id="sgst" step="0.01" placeholder="0.00"/>
+            <label for="interest">Interest:</label> <input type="number" id="interest" step="0.01" placeholder="0.00"/>
+            <label for="penalty">Penalty:</label> <input type="number" id="penalty" step="0.01" placeholder="0.00"/>
+            <label for="totalDemand">Total Demand:</label> <input type="number" id="totalDemand" step="0.01" placeholder="0.00"/>
+        </div>
+    </div>
 
-    <fieldset>
-      <legend>Appeal Details</legend>
-      <label for="appealDueDate">Appeal Due Date:</label> <input type="date" id="appealDueDate" />
-      <label for="appealFiledDate">Appeal Filed Date:</label> <input type="date" id="appealFiledDate" />
-      <label for="apl02Arn">APL-02 ARN:</label> <input type="text" id="apl02Arn" />
-      <label for="apl02Status">APL-02 Status:</label> <input type="text" id="apl02Status" />
-      <label for="statusDate">Status Date (Appeal):</label> <input type="date" id="statusDate" /> 
-      <label for="apl02Date">APL-02 Date:</label> <input type="date" id="apl02Date" />
-    </fieldset>
-
-    <fieldset>
-      <legend>Financial Details</legend>
-      <label for="issues">Issues (Detailed):</label> <input type="text" id="issues" placeholder="Detailed issues"/>
-      <label for="igst">IGST:</label> <input type="number" id="igst" step="0.01" placeholder="0.00"/>
-      <label for="cgst">CGST:</label> <input type="number" id="cgst" step="0.01" placeholder="0.00"/>
-      <label for="sgst">SGST:</label> <input type="number" id="sgst" step="0.01" placeholder="0.00"/>
-      <label for="interest">Interest:</label> <input type="number" id="interest" step="0.01" placeholder="0.00"/>
-      <label for="penalty">Penalty:</label> <input type="number" id="penalty" step="0.01" placeholder="0.00"/>
-      <label for="totalDemand">Total Demand:</label> <input type="number" id="totalDemand" step="0.01" placeholder="0.00"/>
-    </fieldset>
-
-    <fieldset>
-      <legend>Payment Details</legend>
-      <label for="paymentReferenceNumber">Payment Ref No.:</label> <input type="text" id="paymentReferenceNumber" />
-      <label for="paymentDate">Payment Date:</label> <input type="date" id="paymentDate" />
-      <label for="paymentAmount">Payment Amount:</label> <input type="number" id="paymentAmount" step="0.01" placeholder="0.00"/>
-    </fieldset>
+    <div class="accordion-section">
+        <button type="button" class="accordion-header">Payment Details <span class="accordion-icon">+</span></button>
+        <div class="accordion-content">
+            <label for="paymentReferenceNumber">Payment Ref No.:</label> <input type="text" id="paymentReferenceNumber" />
+            <label for="paymentDate">Payment Date:</label> <input type="date" id="paymentDate" />
+            <label for="paymentAmount">Payment Amount:</label> <input type="number" id="paymentAmount" step="0.01" placeholder="0.00"/>
+        </div>
+    </div>
 
     <button type="submit">Save Changes</button>
   </form>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; // Added collection, getDocs
+    import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-
-
     import { firebaseConfig } from './firebase_config.js'; 
 
     const app = initializeApp(firebaseConfig);
@@ -424,25 +471,44 @@
     const primaryLeadNameDisplayInput = document.getElementById("primaryLeadNameDisplay");
     const assignedTeammatesSelect = document.getElementById("assignedTeammates");
     let currentUser = null;
-    let currentCaseData = null; // To store loaded case data including primaryLeadUid
+    let currentCaseData = null; 
 
-    // Function to fetch all users for teammate selection
+    // Accordion functionality
+    const accordionHeaders = document.querySelectorAll(".accordion-header");
+    accordionHeaders.forEach(header => {
+        header.addEventListener("click", function() {
+            this.classList.toggle("active");
+            const content = this.nextElementSibling;
+            const icon = this.querySelector(".accordion-icon");
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                icon.textContent = "+";
+            } else {
+                content.style.display = "block";
+                icon.textContent = "−"; 
+            }
+        });
+    });
+    // By default, open the first accordion section (Client & Case Details)
+    if (accordionHeaders.length > 0) {
+        accordionHeaders[0].classList.add('active');
+        accordionHeaders[0].nextElementSibling.style.display = 'block';
+        accordionHeaders[0].querySelector('.accordion-icon').textContent = '−';
+    }
+
+
     async function populateTeammateSelector(primaryLeadUidToExclude, currentlyAssignedUids = []) {
         if (!assignedTeammatesSelect) return;
-        assignedTeammatesSelect.innerHTML = ''; // Clear existing options
-
+        assignedTeammatesSelect.innerHTML = ''; 
         try {
             const usersSnapshot = await getDocs(collection(db, "userProfiles"));
             usersSnapshot.forEach(docSnap => {
                 const userData = docSnap.data();
                 const userUid = docSnap.id;
-
-                // Exclude the primary lead from being listed as an additional teammate
                 if (userUid !== primaryLeadUidToExclude) {
                     const option = document.createElement('option');
                     option.value = userUid;
                     option.textContent = userData.displayName || userData.email;
-                    // Pre-select if this user is in the currentlyAssignedUids (and is not the primary)
                     if (currentlyAssignedUids.includes(userUid)) {
                         option.selected = true;
                     }
@@ -454,8 +520,6 @@
         }
     }
 
-
-    // Auth state listener
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
             const storedUserJSON = localStorage.getItem('currentUser');
@@ -469,7 +533,7 @@
                     }
                     const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
                     if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
-                    loadCase(); // Load case data after user is confirmed
+                    loadCase(); 
                 } else {
                     localStorage.removeItem('currentUser');
                     window.location.href = 'index.html';
@@ -491,7 +555,6 @@
             }).catch((error) => console.error('Sign out error', error));
         });
     }
-
 
     function formatDateForInput(dateValue) {
       if (!dateValue) return "";
@@ -524,27 +587,23 @@
       try {
         const snapshot = await getDoc(docRef);
         if (snapshot.exists()) {
-          currentCaseData = { id: snapshot.id, ...snapshot.data() }; // Store loaded case data
+          currentCaseData = { id: snapshot.id, ...snapshot.data() }; 
           
-          // Authorization: Case Lead can only edit if they are assigned
           if (currentUser.role === 'caseLead' && !currentCaseData.assignedUsersUids?.includes(currentUser.uid)) {
               alert("You are not authorized to edit this case. Redirecting to dashboard.");
               window.location.href = 'dashboard.html';
               return;
           }
 
-          // Populate form fields
           form.querySelectorAll("input, select").forEach(inputElement => {
             const key = inputElement.id;
             if (inputElement.id === "primaryLeadNameDisplay") {
-                inputElement.value = currentCaseData.primaryLeadName || currentCaseData.leadName || ''; // Use primaryLeadName, fallback to leadName
-                // Make primary lead name read-only for case leads, editable for team leads
+                inputElement.value = currentCaseData.primaryLeadName || currentCaseData.leadName || ''; 
                 inputElement.readOnly = (currentUser.role === 'caseLead');
             } else if (inputElement.id === "assignedTeammates") {
-                // Handled by populateTeammateSelector after users are loaded
+                // Defer to populateTeammateSelector
             } else if (currentCaseData.hasOwnProperty(key)) {
               let dataValue = currentCaseData[key];
-              // Handle potential inconsistencies in field names from older data
               if (key === 'dueOfReplyFiled' && currentCaseData.hasOwnProperty('dueReplyFiled')) { 
                   dataValue = currentCaseData.dueReplyFiled;
               }
@@ -557,18 +616,18 @@
               } else if (inputElement.type === "number") {
                 inputElement.value = dataValue === null || dataValue === undefined || dataValue === "" ? "" : parseFloat(dataValue);
               } else if (inputElement.tagName === 'SELECT' && inputElement.id === 'status') {
-                inputElement.value = dataValue || "Open"; // Default to Open if status is empty
+                inputElement.value = dataValue || "Open"; 
+              } else if (inputElement.tagName === 'SELECT' && inputElement.id === 'priority') {
+                inputElement.value = dataValue || "Medium"; 
               }
               else {
                 inputElement.value = dataValue === null || dataValue === undefined ? "" : dataValue;
               }
             }
           });
-          // Populate teammate selector
           const coLeadUids = currentCaseData.assignedUsersUids ? 
                              currentCaseData.assignedUsersUids.filter(uid => uid !== currentCaseData.primaryLeadUid) : [];
           await populateTeammateSelector(currentCaseData.primaryLeadUid, coLeadUids);
-
 
         } else {
           alert("Case not found with ID: " + caseIdFromUrl);
@@ -586,68 +645,98 @@
           alert("Cannot update: Case data not loaded or no case ID specified.");
           return;
       }
-       // Authorization check again before submitting
       if (currentUser.role === 'caseLead' && !currentCaseData.assignedUsersUids?.includes(currentUser.uid)) {
           alert("You are not authorized to save changes to this case.");
           return;
       }
 
-
       const docRef = doc(db, "cases", caseIdFromUrl);
       const updatedData = {};
+      console.log("Starting to build updatedData. Current form values:"); 
+
       const inputs = form.querySelectorAll("input, select");
       inputs.forEach((input) => {
-        if (input.id && input.id !== "primaryLeadNameDisplay" && input.id !== "assignedTeammates") { // Exclude display-only and multi-select here
-          let valueToStore = input.value;
+        console.log(`Processing input: id='${input.id}', type='${input.type}', tagName='${input.tagName}', value='${input.value}'`);
+        if (input.id && input.id !== "primaryLeadNameDisplay" && input.id !== "assignedTeammates") { 
+          let valueToStore;
+          let rawValue = input.value;
+
           if (input.type === "number") {
-            valueToStore = input.value === "" ? null : parseFloat(input.value);
+            if (rawValue === "" || rawValue === null || typeof rawValue === 'undefined') { 
+              valueToStore = null;
+            } else {
+              const num = parseFloat(rawValue);
+              valueToStore = isNaN(num) ? null : num;
+            }
           } else if (input.type === "date") {
-            valueToStore = input.value === "" ? null : input.value;
-          } else if (input.tagName === 'SELECT' && input.id === 'status') {
-            valueToStore = input.value;
+            valueToStore = (rawValue === "" || rawValue === null || typeof rawValue === 'undefined') ? null : rawValue;
+          } else if (input.tagName === 'SELECT') { 
+            valueToStore = rawValue; 
+          } else { 
+            valueToStore = (typeof rawValue === 'undefined') ? null : rawValue;
           }
           
           let firestoreKey = input.id;
-          if (input.id === 'dueOfReplyFiled') { // Ensure consistency with how it's loaded
+          if (input.id === 'dueOfReplyFiled') { 
               firestoreKey = 'dueReplyFiled'; 
           }
-           if (input.id === 'statusDate' && currentCaseData.hasOwnProperty('apl02StatusDate')) { // If original data had apl02StatusDate
-              firestoreKey = 'apl02StatusDate'; // Save back to apl02StatusDate
+          if (input.id === 'statusDate' && currentCaseData.hasOwnProperty('apl02StatusDate')) { 
+              firestoreKey = 'apl02StatusDate'; 
           }
+          console.log(`  -> Determined firestoreKey: '${firestoreKey}', valueToStore:`, valueToStore, `(type: ${typeof valueToStore})`);
 
-
-          updatedData[firestoreKey] = valueToStore;
+          if (typeof valueToStore === 'undefined') {
+            console.warn(`  -> Value for '${firestoreKey}' was undefined. Converting to null.`);
+            updatedData[firestoreKey] = null;
+          } else {
+            updatedData[firestoreKey] = valueToStore;
+          }
+        } else {
+          console.log(`  -> Skipping input: id='${input.id}'`);
         }
       });
-
-      // Handle assigned teammates
+      
       const selectedCoLeadUids = Array.from(assignedTeammatesSelect.selectedOptions).map(option => option.value);
-      updatedData.assignedUsersUids = [currentCaseData.primaryLeadUid, ...selectedCoLeadUids.filter(uid => uid !== currentCaseData.primaryLeadUid)];
-      // Ensure no duplicates and primary lead is always there
-      updatedData.assignedUsersUids = [...new Set(updatedData.assignedUsersUids)];
+      
+      if (typeof currentCaseData.primaryLeadUid !== 'undefined') {
+        updatedData.primaryLeadUid = currentCaseData.primaryLeadUid;
+      } else {
+        updatedData.primaryLeadUid = null; 
+        console.warn("'currentCaseData.primaryLeadUid' was undefined, setting to null in updatedData for 'primaryLeadUid' field.");
+      }
 
-
-      // Primary Lead - For now, not changing primary lead via this form to keep it simple.
-      // If TeamLead could change it, we'd need a robust way to get the new primaryLeadUid.
-      updatedData.primaryLeadUid = currentCaseData.primaryLeadUid; 
-      updatedData.primaryLeadName = primaryLeadNameDisplayInput.value.trim(); // If TeamLead edited it
-      // If leadName was the old field name, ensure it's updated or removed if primaryLeadName is the new standard
+      const tempAssignedUsersUids = [];
+      if (updatedData.primaryLeadUid) { 
+        tempAssignedUsersUids.push(updatedData.primaryLeadUid);
+      }
+      selectedCoLeadUids.forEach(uid => {
+        if (uid && uid !== updatedData.primaryLeadUid) { 
+          tempAssignedUsersUids.push(uid);
+        }
+      });
+      updatedData.assignedUsersUids = [...new Set(tempAssignedUsersUids)];
+      console.log("Assigned Teammates (assignedUsersUids):", updatedData.assignedUsersUids);
+      
+      updatedData.primaryLeadName = primaryLeadNameDisplayInput.value.trim(); 
       updatedData.leadName = primaryLeadNameDisplayInput.value.trim();
-
-
       updatedData.lastUpdatedAt = new Date();
+      console.log("Primary Lead UID (in updatedData):", updatedData.primaryLeadUid);
+      console.log("Primary Lead Name:", updatedData.primaryLeadName);
+      console.log("Last Updated At:", updatedData.lastUpdatedAt);
+
+      console.log("Final updatedData object to be sent to Firestore:", JSON.parse(JSON.stringify(updatedData, (key, value) =>
+        typeof value === 'undefined' ? null : value 
+      )));
 
       try {
         await updateDoc(docRef, updatedData);
         alert("Case updated successfully!");
         window.location.href = "dashboard.html"; 
       } catch (error) {
-        console.error("Error updating document:", error);
+        console.error("Error updating document:", error); 
         alert("Failed to update case. Check console for details.");
       }
     });
-
-    // Initial load is triggered by onAuthStateChanged
   </script>
 </body>
 </html>

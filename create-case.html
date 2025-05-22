@@ -62,7 +62,7 @@
     /* Watermark Styling */
     body::after {
         content: "";
-        background-image: url('images/aekalogo.webp'); 
+        background-image: url('images/WebsiteLogo_1-898735755-1659284008389.webp'); /* Corrected logo path */
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 250px auto; 
@@ -273,6 +273,19 @@
         </select>
       <small style="display: block; margin-top: 4px; color: var(--muted-text-color);">Hold Ctrl (or Cmd on Mac) to select multiple teammates.</small>
 
+      <label for="status">Status</label>
+      <select id="status">
+          <option value="Open" selected>Open</option>
+          <option value="Pending">Pending</option>
+          <option value="Closed">Closed</option>
+      </select>
+
+      <label for="priority">Priority <span class="required-asterisk">*</span></label>
+      <select id="priority" required>
+          <option value="High">High</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Low">Low</option>
+      </select>
 
       <label for="currentStage">Current Stage</label>
       <input type="text" id="currentStage" placeholder="e.g., Investigation, Hearing"/>
@@ -282,14 +295,6 @@
 
       <label for="issue">Issue (Primary)</label>
       <input type="text" id="issue" placeholder="Primary issue of the case"/>
-
-      <label for="status">Status</label>
-      <select id="status">
-          <option value="Open" selected>Open</option>
-          <option value="Pending">Pending</option>
-          <option value="Closed">Closed</option>
-      </select>
-
 
       <label for="period">Period</label>
       <input type="text" id="period" placeholder="e.g., FY 2022-23"/>
@@ -385,9 +390,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; // Added getDocs
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc as getFirestoreDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js"; 
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-    
     import { firebaseConfig } from './firebase_config.js'; 
 
     const app = initializeApp(firebaseConfig); 
@@ -398,32 +402,27 @@
     const userEmailRoleDisplay = document.getElementById("user-email-role-display");
     const logoutButtonHeader = document.getElementById("logout-button-header");
     const leadNameDisplayInput = document.getElementById("leadNameDisplay"); 
-    const teammatesSelect = document.getElementById("teammates"); // Teammate selector
+    const teammatesSelect = document.getElementById("teammates"); 
     let currentUser = null;
-    let allUsers = []; // To store fetched users for teammate selection
+    let allUsers = []; 
 
-    // Function to fetch users to populate teammate selector
     async function loadUsersForTeammateSelection() {
-        if (!currentUser) return; // Don't load if no current user
-
+        if (!currentUser) return; 
         try {
             const usersSnapshot = await getDocs(collection(db, "userProfiles"));
-            allUsers = []; // Clear previous list
+            allUsers = []; 
             usersSnapshot.forEach(doc => {
                 const userData = doc.data();
-                // Add user to list if they are not the current user
                 if (doc.id !== currentUser.uid) { 
                     allUsers.push({ uid: doc.id, name: userData.displayName || userData.email, email: userData.email });
                 }
             });
-
-            // Populate the select dropdown
             if (teammatesSelect) {
-                teammatesSelect.innerHTML = ''; // Clear existing options
+                teammatesSelect.innerHTML = ''; 
                 allUsers.forEach(user => {
                     const option = document.createElement('option');
                     option.value = user.uid;
-                    option.textContent = user.name; // Display name or email
+                    option.textContent = user.name; 
                     teammatesSelect.appendChild(option);
                 });
             }
@@ -432,41 +431,67 @@
         }
     }
 
-
-    // Authentication and Role Check
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
             const storedUserJSON = localStorage.getItem('currentUser');
             if (storedUserJSON) {
-                currentUser = JSON.parse(storedUserJSON);
-                if (currentUser.uid === firebaseUser.uid) {
-                    if (currentUser.role === 'viewer') {
-                        alert("Viewers are not authorized to create cases. Redirecting to dashboard.");
-                        window.location.href = 'dashboard.html';
-                        return;
+                try {
+                    currentUser = JSON.parse(storedUserJSON);
+                    if (currentUser.uid === firebaseUser.uid) {
+                        if (currentUser.role === 'viewer') {
+                            alert("Viewers are not authorized to create cases. Redirecting to dashboard.");
+                            window.location.href = 'dashboard.html';
+                            return;
+                        }
+                        const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                        const userName = currentUser.displayName || currentUser.email; // Use displayName
+                        if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${userName} (${displayRole})`;
+                        
+                        if(leadNameDisplayInput) {
+                            leadNameDisplayInput.value = userName; // Use displayName
+                            leadNameDisplayInput.readOnly = (currentUser.role === 'caseLead'); 
+                        }
+                        loadUsersForTeammateSelection(); 
+                    } else {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'index.html';
                     }
-                    // Populate user info in header
-                    const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
-                    if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${currentUser.displayName || currentUser.email} (${displayRole})`;
-                    
-                    // Auto-fill lead name for 'caseLead' and 'teamLead' (creator is primary lead by default)
-                    if(leadNameDisplayInput) {
-                        leadNameDisplayInput.value = currentUser.displayName || currentUser.email;
-                        // TeamLead can change this if assigning to someone else primarily,
-                        // CaseLead's name is fixed as they are the primary lead.
-                        leadNameDisplayInput.readOnly = (currentUser.role === 'caseLead'); 
-                    }
-                    loadUsersForTeammateSelection(); // Load users for teammate selection
-
-                } else {
+                } catch(e) {
+                    console.error("Error parsing currentUser from localStorage", e);
                     localStorage.removeItem('currentUser');
                     window.location.href = 'index.html';
                 }
             } else {
-                 // If not in localStorage, try to fetch (should ideally be set at login)
-                console.warn("Create Case: No currentUser in localStorage. Attempting to fetch...");
-                // For robustness, you might want to fetch from Firestore here or just redirect to login
-                window.location.href = 'index.html'; 
+                // Attempt to fetch profile if not in localStorage
+                const userProfileRef = doc(db, "userProfiles", firebaseUser.uid);
+                getFirestoreDoc(userProfileRef).then(docSnap => {
+                    if (docSnap.exists()) {
+                        currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, ...docSnap.data() };
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser)); // Store fetched profile
+                        if (currentUser.role === 'viewer') {
+                            alert("Viewers are not authorized to create cases. Redirecting to dashboard.");
+                            window.location.href = 'dashboard.html';
+                            return;
+                        }
+                        const displayRole = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                        const userName = currentUser.displayName || currentUser.email;
+                        if(userEmailRoleDisplay) userEmailRoleDisplay.textContent = `${userName} (${displayRole})`;
+                        
+                        if(leadNameDisplayInput) {
+                            leadNameDisplayInput.value = userName;
+                            leadNameDisplayInput.readOnly = (currentUser.role === 'caseLead'); 
+                        }
+                        loadUsersForTeammateSelection();
+                    } else {
+                        console.warn("Create Case: User profile not found in Firestore. Redirecting to login.");
+                        localStorage.removeItem('currentUser'); 
+                        window.location.href = 'index.html';
+                    }
+                }).catch(error => {
+                    console.error("Create Case: Error fetching user profile on auth change:", error);
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                });
             }
         } else {
             localStorage.removeItem('currentUser');
@@ -483,7 +508,6 @@
         });
     }
 
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -496,8 +520,7 @@
           return;
       }
 
-      // Prepare assignedUsersUids array
-      const assignedUsersUids = [currentUser.uid]; // Creator is always assigned
+      const assignedUsersUids = [currentUser.uid]; 
       const selectedTeammates = Array.from(teammatesSelect.selectedOptions).map(option => option.value);
       selectedTeammates.forEach(uid => {
           if (!assignedUsersUids.includes(uid)) {
@@ -505,24 +528,24 @@
           }
       });
       
-      // Get primary lead details (creator is default primary lead)
       const primaryLeadName = leadNameDisplayInput.value.trim();
-      const primaryLeadUid = currentUser.uid; // By default, creator is primary lead. 
-                                           // A team lead could potentially change this if UI allowed selecting a different primary.
+      const primaryLeadUid = currentUser.uid; 
 
       const caseData = {
         client: form.client.value.trim(),
         state: form.state.value.trim(),
         
-        // Storing primary lead info + array of all assigned UIDs
         leadName: primaryLeadName, 
-        leadUid: primaryLeadUid, // UID of the primary lead (creator by default)
-        assignedUsersUids: assignedUsersUids, // Array of UIDs including creator and teammates
+        primaryLeadName: primaryLeadName, // Ensure primaryLeadName is also stored for consistency
+        leadUid: primaryLeadUid, 
+        assignedUsersUids: assignedUsersUids, 
+
+        status: form.status.value,
+        priority: form.priority.value, 
 
         currentStage: form.currentStage.value.trim(),
         nextStep: form.nextStep.value.trim(),
         issue: form.issue.value.trim(),
-        status: form.status.value, 
         period: form.period.value.trim(),
         caseId: form.caseId.value.trim(),
         adt01ReferenceId: form.adt01ReferenceId.value.trim(),
@@ -561,13 +584,12 @@
         paymentAmount: form.paymentAmount.value ? parseFloat(form.paymentAmount.value) : null,
         
         createdByUid: currentUser.uid,
-        createdByName: currentUser.displayName || currentUser.email,
+        createdByName: currentUser.displayName || currentUser.email, // Use displayName
         createdAt: new Date() 
       };
 
-      // Required fields validation
-      if (!caseData.client || !caseData.state || !caseData.leadName) { 
-        alert("Please fill in all required fields: Client, State, and Primary Lead.");
+      if (!caseData.client || !caseData.state || !caseData.leadName || !caseData.priority) { 
+        alert("Please fill in all required fields: Client, State, Primary Lead, and Priority.");
         return;
       }
 
@@ -576,14 +598,14 @@
         console.log("Document written with ID: ", docRef.id, " Data:", caseData);
         alert("Case saved successfully!");
         form.reset();
-        // Re-populate lead name if caseLead after reset
         if (currentUser.role === 'caseLead' && leadNameDisplayInput) {
-            leadNameDisplayInput.value = currentUser.displayName || currentUser.email;
+            leadNameDisplayInput.value = currentUser.displayName || currentUser.email; // Reset with displayName
+        } else if (leadNameDisplayInput) { // For teamLead, also reset to their name
+             leadNameDisplayInput.value = currentUser.displayName || currentUser.email;
         }
-        // Clear and reload teammate selector
+        form.priority.value = "Medium"; 
         if(teammatesSelect) teammatesSelect.innerHTML = '';
         loadUsersForTeammateSelection();
-
 
       } catch (error) {
         console.error("Error adding document: ", error);

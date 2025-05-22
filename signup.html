@@ -60,7 +60,7 @@
     /* Watermark Styling */
     body::after {
         content: ""; 
-        background-image: url('images/aekalogo.webp'); /* Symbol-only logo for watermark */
+        background-image: url('images/WebsiteLogo_1-898735755-1659284008389.webp'); 
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 200px auto; 
@@ -93,10 +93,10 @@
 
     /* Logo Styling */
     .header-logo {
-        width: 180px; /* Adjusted width for the logo with text */
-        max-width: 80%; /* Ensure it doesn't overflow container on very small screens */
-        height: auto; /* Maintain aspect ratio */
-        margin-bottom: 20px; /* Increased space below logo */
+        width: 180px; 
+        max-width: 80%; 
+        height: auto; 
+        margin-bottom: 20px; 
     }
 
     /* Heading Styling */
@@ -121,6 +121,7 @@
         font-size: 14px;
     }
 
+    input[type="text"], 
     input[type="email"], 
     input[type="password"],
     select#role { 
@@ -145,14 +146,16 @@
         padding-right: 2.5rem; 
     }
 
-
     /* Placeholder Styling for Inputs */
-    input[type="email"]::placeholder, input[type="password"]::placeholder {
+    input[type="text"]::placeholder, 
+    input[type="email"]::placeholder, 
+    input[type="password"]::placeholder {
         color: var(--text-muted); 
         opacity: 1; 
     }
 
     /* Focus Styling for Inputs & Select */
+    input[type="text"]:focus, 
     input[type="email"]:focus, 
     input[type="password"]:focus,
     select#role:focus {
@@ -200,27 +203,6 @@
       text-decoration: underline;
       color: var(--logo-primary-red-darker); 
     }
-
-    /* Optional Message Styling */
-    .message {
-        padding: 12px 15px; 
-        margin-bottom: 20px; 
-        border-radius: var(--border-radius-sm);
-        font-size: 14px;
-        text-align: left; 
-        display: none; 
-    }
-    .message.success {
-        background-color: #E8F5E9; 
-        color: #1B5E20;    
-        border: 1px solid #A5D6A7; 
-    }
-    .message.error {
-        background-color: var(--logo-red-tint-light); 
-        color: var(--logo-primary-red-darker); 
-        border: 1px solid var(--logo-red-tint-medium); 
-    }
-
   </style>
 </head>
 <body>
@@ -229,20 +211,23 @@
     <h1>Create Your Account</h1>
     <form id="signup-form">
       <div class="form-group">
+        <label for="displayName">Display Name</label>
+        <input type="text" id="displayName" placeholder="Enter your full name" required />
+      </div>
+      <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="Enter your email" required />
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Choose a password" required />
+        <input type="password" id="password" placeholder="Choose a password (min. 6 characters)" required />
       </div>
       <div class="form-group">
         <label for="role">Select Your Role</label>
         <select id="role" name="role" required>
           <option value="viewer" selected>Viewer (View cases only)</option>
           <option value="caseLead">Case Lead (Manage assigned cases)</option>
-          <option value="teamLead">Admin/Team Lead</option> 
-        </select>
+          </select>
       </div>
       <button type="submit">Sign Up</button>
     </form>
@@ -250,77 +235,66 @@
   </div>
 
   <script type="module">
-    // Firebase App and Auth modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-    // Import Firestore modules for creating user profile
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-    
-    // Firebase configuration (ensure firebase_config.js is in the correct path)
     import { firebaseConfig } from './firebase_config.js'; 
 
-    // Initialize Firebase app
     const app = initializeApp(firebaseConfig); 
-    // Get Firebase Auth instance
     const auth = getAuth(app); 
-    // Get Firestore instance
     const db = getFirestore(app);
 
-    // Get the signup form element
     const signupForm = document.getElementById('signup-form'); 
 
-    // Add event listener for form submission
     signupForm.addEventListener('submit', (e) => { 
-      e.preventDefault(); // Prevent default form submission
+      e.preventDefault(); 
       
+      const displayName = document.getElementById('displayName').value.trim(); 
       const email = document.getElementById('email').value; 
       const password = document.getElementById('password').value; 
-      let selectedRole = document.getElementById('role').value; // Get the selected role
+      let selectedRole = document.getElementById('role').value; 
 
-      // SECURITY CONSIDERATION: Prevent self-assignment of 'teamLead' through this public form.
-      // If 'teamLead' is selected, default to 'viewer'. True 'teamLead' assignment should be an admin action.
-      if (selectedRole === "teamLead") {
-          console.warn("Attempt to self-assign 'teamLead' role during public signup. Defaulting to 'viewer'. Admin assignment required for 'teamLead'.");
+      if (!displayName) {
+          alert("Please enter your display name.");
+          return;
+      }
+      if (password.length < 6) {
+          alert("Password should be at least 6 characters long.");
+          return;
+      }
+
+      // This check is now less critical if the option is removed from HTML, but good as a safeguard.
+      if (selectedRole === "teamLead") { 
+          console.warn("Attempt to select 'teamLead' (should not be possible from UI). Defaulting to 'viewer'.");
           selectedRole = "viewer"; 
       }
 
-
-      // Attempt to create a new user with email and password
       createUserWithEmailAndPassword(auth, email, password) 
-        .then(async (userCredential) => { // Added async here to use await for setDoc
-          // User account created successfully in Firebase Authentication
+        .then(async (userCredential) => { 
           const user = userCredential.user;
           
-          // Now, create a user profile document in Firestore
           try {
-            // Document ID will be the user's UID from Authentication
-            // Collection is 'userProfiles'
             await setDoc(doc(db, "userProfiles", user.uid), {
+              displayName: displayName, 
               email: user.email,
-              role: selectedRole, // Use the (potentially overridden) selected role
-              createdAt: new Date() // Optional: timestamp of profile creation
+              role: selectedRole, 
+              createdAt: new Date() 
             });
-            console.log(`User profile created in Firestore for UID: ${user.uid} with role: ${selectedRole}`);
+            console.log(`User profile created in Firestore for UID: ${user.uid} with role: ${selectedRole} and name: ${displayName}`);
             
-            let alertMessage = `Account created successfully as a ${selectedRole}! Profile also created.`;
-            if (document.getElementById('role').value === "teamLead" && selectedRole === "viewer") { // Check original selection for tailored message
-                alertMessage = "Account created successfully as a Viewer. Admin/Team Lead role requires administrator assignment. Profile also created.";
-            }
+            const alertMessage = `Account created successfully for ${displayName} as a ${selectedRole}! Profile also created.`;
             alert(alertMessage); 
             
-            // Redirect to the login page after a short delay
             setTimeout(() => { 
               window.location.href = 'index.html'; 
             }, 2000); 
 
           } catch (firestoreError) {
-            // Handle errors during Firestore document creation
             console.error("Error creating user profile in Firestore: ", firestoreError);
             alert("Account created, but failed to save profile information. Please contact support. Error: " + firestoreError.message);
           }
         })
         .catch(authError => { 
-          // Handle errors during Firebase Authentication account creation
           const errorMessage = authError.message; 
           alert("Signup failed: " + errorMessage); 
           console.error("Signup Authentication Error:", authError); 
